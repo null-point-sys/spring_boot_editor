@@ -20,10 +20,10 @@
       const code = editor.getValue();
 
       // Guarda el código en el repositorio usando la API REST de GitHub
-      await fetch('https://api.github.com/repos/<username>/<repo>/contents/src/main/java/com/example/UserCode.java', {
+      await fetch('https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/contents/src/main/java/com/example/UserCode.java', {
         method: 'PUT',
         headers: {
-          'Authorization': 'Bearer <TOKEN>',
+          'Authorization': 'Bearer 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',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
