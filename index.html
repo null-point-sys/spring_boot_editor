@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Code Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.css" />
+</head>
+<body>
+  <textarea id="editor"></textarea>
+  <button id="saveCode">Save and Run Tests</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/mode/clike/clike.js"></script>
+  <script>
+    const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+      mode: 'text/x-java',
+      lineNumbers: true,
+    });
+
+    document.getElementById('saveCode').addEventListener('click', async () => {
+      const code = editor.getValue();
+
+      // Guarda el código en el repositorio usando la API REST de GitHub
+      await fetch('https://api.github.com/repos/<username>/<repo>/contents/src/main/java/com/example/UserCode.java', {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer <TOKEN>',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'User submitted code',
+          content: btoa(code),
+          sha: '<file-sha-if-updating>',
+        }),
+      });
+    });
+  </script>
+</body>
+</html>
