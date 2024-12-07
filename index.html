@@ -17,7 +17,7 @@
     });
 
 async function getFileSHA() {
-  const response = await fetch('https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/contents/src/main/java/com/example/UserCode.java', {
+  const response = await fetch('https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/contents/src/main/java/com/example/demo/UserCode.java', {
     headers: {
       'Authorization': 'Bearer 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',
     },
@@ -36,7 +36,7 @@ document.getElementById('saveCode').addEventListener('click', async () => {
   const code = editor.getValue();
   const sha = await getFileSHA(); // Obtener SHA del archivo actual
   
-  await fetch( 'https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/contents/src/main/java/com/example/UserCode.java', {
+  await fetch( 'https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/contents/src/main/java/com/example/demo/UserCode.java', {
     method: 'PUT',
     headers: {
       'Authorization': 'Bearer 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',
