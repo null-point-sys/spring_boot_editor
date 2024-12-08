@@ -13,67 +13,62 @@
   <script src="https://cdn.jsdelivr.net/npm/@octokit/core/dist-web/index.js"></script>
 
   <script>
-
-    async function testGitHubAPI() {
-      const response = await octokit.request('GET /repos/null-point-sys/spring_boot_rest_api_crud', {
-        owner: 'null-point-sys',
-        repo: 'spring_boot_rest_api_crud',
-      });
-      console.log(response);
-    }
-    
-    testGitHubAPI();
-    
+    // Inicializar el editor de código
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'text/x-java',
       lineNumbers: true,
     });
 
-    // Configura Octokit con tu token
+    // Configurar Octokit con tu token
     const octokit = new Octokit({
-      auth: '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'
+      auth: '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', // Asegúrate de usar un token válido
     });
 
+    // Función para obtener el SHA del archivo si existe
+    async function getFileSHA() {
+      try {
+        const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner: 'null-point-sys',
+          repo: 'spring_boot_rest_api_crud',
+          path: 'src/main/java/com/example/demo/UserCode.java',
+        });
+        return data.sha; // Retorna el SHA si el archivo existe
+      } catch (err) {
+        if (err.status === 404) {
+          console.log('Archivo no existe. Se creará uno nuevo.');
+          return null; // Retorna null si el archivo no existe
+        } else {
+          throw new Error('Error al obtener SHA del archivo:', err);
+        }
+      }
+    }
+
+    // Evento del botón para guardar el código
     document.getElementById('saveCode').addEventListener('click', async () => {
-      const code = editor.getValue();
-      const contentBase64 = btoa(code);
+      const code = editor.getValue(); // Obtener el código del editor
+      const contentBase64 = btoa(code); // Convertir a Base64
 
       try {
-        // Obtener SHA del archivo si existe
-        let sha;
-        try {
-          const { data } = await octokit.request('GET /repos/null-point-sys/spring_boot_rest_api_crud/contents/{path}', {
-            owner: 'null-point-sys',
-            repo: 'spring_boot_rest_api_crud',
-            path: 'src/main/java/com/example/demo/UserCode.java',
-          });
-          sha = data.sha;
-        } catch (err) {
-          if (err.status === 404) {
-            console.log('Archivo no existe, se creará uno nuevo.');
-          } else {
-            throw err;
-          }
-        }
+        const sha = await getFileSHA(); // Obtener el SHA del archivo
 
-        // Actualizar o crear archivo
-        await octokit.request('PUT /repos/null-point-sys/spring_boot_rest_api_crud/contents/{path}', {
+        // Crear o actualizar el archivo en el repositorio
+        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
           owner: 'null-point-sys',
           repo: 'spring_boot_rest_api_crud',
           path: 'src/main/java/com/example/demo/UserCode.java',
           message: 'User submitted code',
           committer: {
-            name: 'ale',
+            name: 'Ale',
             email: 'jaalza@example.com',
           },
           content: contentBase64,
-          sha: sha || undefined, // SHA solo si el archivo existe
+          sha: sha || undefined, // Incluye SHA solo si el archivo existe
         });
 
         alert('Código guardado con éxito.');
-
       } catch (error) {
         console.error('Error al guardar el archivo:', error);
+        alert('Hubo un error al guardar el código. Por favor, revisa la consola para más detalles.');
       }
     });
   </script>
