@@ -13,6 +13,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@octokit/core/dist-web/index.js"></script>
 
   <script>
+
+    async function testGitHubAPI() {
+      const response = await octokit.request('GET /repos/null-point-sys/spring_boot_rest_api_crud', {
+        owner: 'null-point-sys',
+        repo: 'spring_boot_rest_api_crud',
+      });
+      console.log(response);
+    }
+    
+    testGitHubAPI();
+    
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'text/x-java',
       lineNumbers: true,
