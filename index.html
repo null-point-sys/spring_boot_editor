@@ -11,12 +11,11 @@
   <button id="saveCode">Save and Run Tests</button>
 
   <script type="module">
+    import * as CodeMirror from "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/lib/codemirror.js";
+    import "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/mode/clike/clike.js";
     import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
     // Inicializar el editor de código
-    import CodeMirror from "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/lib/codemirror.js";
-    import "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/mode/clike/clike.js";
-
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'text/x-java',
       lineNumbers: true,
