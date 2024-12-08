@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Editor</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.css" />
 </head>
@@ -8,12 +10,13 @@
   <textarea id="editor"></textarea>
   <button id="saveCode">Save and Run Tests</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/mode/clike/clike.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@octokit/core/dist-web/index.js"></script>
+  <script type="module">
+    import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
-  <script>
     // Inicializar el editor de código
+    import CodeMirror from "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/lib/codemirror.js";
+    import "https://cdn.jsdelivr.net/npm/codemirror@5.65.10/mode/clike/clike.js";
+
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'text/x-java',
       lineNumbers: true,
