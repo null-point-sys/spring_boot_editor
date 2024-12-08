@@ -18,6 +18,13 @@
   <script type="module">
     import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
+    const { data } = await octokit.request('GET /repos/{owner}/{repo}', {
+      owner: 'null-point-sys',
+      repo: 'spring_boot_rest_api_crud',
+    });
+    console.log(data); // Verifica que esta llamada funcione correctamente
+
+
     // Inicializar el editor de código desde el área de texto
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'text/x-java',
