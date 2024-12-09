@@ -61,28 +61,57 @@
       theme: "default",
     });
 
+    let backendUrl = ''; // Inicializa la URL del backend como vacía
+
+    // Obtén la URL del backend desde el archivo JSON
+    fetch('ngrok-url.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        backendUrl = data.url; // Asigna la URL del backend
+        console.log(`Backend URL: ${backendUrl}`);
+      })
+      .catch(error => {
+        console.error('Error al obtener la URL del backend:', error);
+        alert('No se pudo conectar al backend. Intenta más tarde.');
+      });
+
     document.getElementById('saveCode').addEventListener('click', () => {
-      const code = editor.getValue();  // Obtén el código del editor
-    
-      // Envía el código al backend, sin involucrar el GITHUB_TOKEN en el frontend
-      fetch('http://localhost:3000/save-code', { // Cambia a la URL de tu backend
+      const code = editor.getValue(); // Obtén el código del editor
+
+      if (!backendUrl) {
+        alert('El backend aún no está disponible. Intenta más tarde.');
+        return;
+      }
+
+      // Envía el código al backend usando la URL dinámica
+      fetch(`${backendUrl}/save-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code }),  // Envía el código como JSON
+        body: JSON.stringify({ code }), // Envía el código como JSON
       })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);  // Muestra el mensaje del backend
-      })
-      .catch(error => {
-        console.error('Error al guardar el código:', error);
-        alert('Error al guardar el código');
-      });
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message); // Muestra el mensaje del backend
+        })
+        .catch(error => {
+          console.error('Error al guardar el código:', error);
+          alert('Error al guardar el código');
+        });
     });
-
   </script>
 </body>
+
 </html>
 
