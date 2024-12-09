@@ -1,36 +1,36 @@
-name: Backend Node.js con GitHub Actions
+name: Generar ngrok-url.json y desplegar en gh-pages
 
 on:
   push:
     branches:
-      - main  # Ejecutar este flujo en la rama `main`
+      - main  # Se ejecuta cuando hay cambios en la rama `main`
 
 jobs:
-  build-and-run-backend:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Clonar el repositorio
+      # 1. Clonar el repositorio
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configurar Node.js
+      # 2. Configurar Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Instalar dependencias del backend
+      # 3. Instalar dependencias (si son necesarias para otros procesos)
       - name: Install dependencies
         run: npm install
 
-      # Instalar ngrok
+      # 4. Descargar e instalar ngrok
       - name: Install ngrok
         run: |
           curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz | tar xz -C /tmp
           sudo mv /tmp/ngrok /usr/local/bin/ngrok
 
-      # Ejecutar el servidor backend con ngrok
+      # 5. Ejecutar el servidor backend con ngrok
       - name: Run backend server with ngrok
         id: ngrok
         env:
@@ -38,20 +38,20 @@ jobs:
         run: |
           nohup ngrok config add-authtoken $NGROK_AUTH_TOKEN > /dev/null 2>&1
           nohup ngrok http 3000 > ngrok.log &
-          sleep 5
+          sleep 5  # Esperar a que ngrok esté listo
           NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
 
-      # Generar archivo ngrok-url.json
+      # 6. Generar el archivo ngrok-url.json
       - name: Generate ngrok URL file
         run: |
           echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
 
-      # Subir archivo a gh-pages
+      # 7. Subir ngrok-url.json a la rama gh-pages
       - name: Deploy ngrok URL to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages  # Publicar en la rama `gh-pages`
           publish_dir: ./  # El archivo debe estar en la raíz
-          publish_branch: gh-pages
-          keep_files: true  # Conserva otros archivos existentes en la rama gh-pages
+          keep_files: true  # Mantener los archivos existentes en `gh-pages`
