@@ -1,0 +1,43 @@
+name: Pass Code to Spring Boot Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Upload Generated Code as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: UserCode
+          path: UserCode.java # Asegúrate de que este archivo se genere en el directorio raíz.
+
+  move-to-spring-boot:
+    needs: build-and-upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          repository: null-point-sys/spring_boot_rest_api_crud
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: UserCode
+
+      - name: Move Code to Spring Boot Repo
+        run: |
+          mv UserCode.java src/main/java/com/example/demo/UserCode.java
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/main/java/com/example/demo/UserCode.java
+          git commit -m "Add UserCode.java from Editor"
+          git push
