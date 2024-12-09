@@ -18,70 +18,92 @@
   <script type="module">
     import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
-    // Inicializar el editor de código desde el área de texto
-    const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-      mode: 'text/x-java',
-      lineNumbers: true,
-    });
-
-    // Configurar Octokit con tu token
-    const octokit = new Octokit({
-      auth: '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', // Asegúrate de usar un token válido
-    });
-
-    const { data } = await octokit.request('GET /repos/{owner}/{repo}', {
-      owner: 'null-point-sys',
-      repo: 'spring_boot_rest_api_crud',
-    });
-    console.log(data); // Verifica que esta llamada funcione correctamente
-
-    // Función para obtener el SHA del archivo si existe
-    async function getFileSHA() {
-      try {
-        const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-          owner: 'null-point-sys',
-          repo: 'spring_boot_rest_api_crud',
-          path: 'src/main/java/com/example/demo/UserCode.java',
-        });
-        return data.sha; // Retorna el SHA si el archivo existe
-      } catch (err) {
-        if (err.status === 404) {
-          console.log('Archivo no existe. Se creará uno nuevo.');
-          return null; // Retorna null si el archivo no existe
-        } else {
-          throw new Error('Error al obtener SHA del archivo:', err);
-        }
-      }
+    // Función para convertir a Base64 de forma segura
+    function toBase64(string) {
+      return window.btoa(unescape(encodeURIComponent(string)));
     }
 
-    // Evento del botón para guardar el código
-    document.getElementById('saveCode').addEventListener('click', async () => {
-      const code = editor.getValue(); // Obtener el código del editor
-      const contentBase64 = btoa(code); // Convertir a Base64
+    (async () => {
+      // Inicializar el editor de código
+      const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+        mode: 'text/x-java',
+        lineNumbers: true,
+      });
 
+      // Configurar Octokit con tu token (asegúrate de proteger este token)
+      const octokit = new Octokit({
+        auth: 'ghp_tu_token_seguro_aqui',
+      });
+
+      // Verificar autenticación
       try {
-        const sha = await getFileSHA(); // Obtener el SHA del archivo
-
-        // Crear o actualizar el archivo en el repositorio
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-          owner: 'null-point-sys',
-          repo: 'spring_boot_rest_api_crud',
-          path: 'src/main/java/com/example/demo/UserCode.java',
-          message: 'User submitted code',
-          committer: {
-            name: 'Ale',
-            email: 'jaalza@example.com',
-          },
-          content: contentBase64,
-          sha: sha || undefined, // Incluye SHA solo si el archivo existe
-        });
-
-        alert('Código guardado con éxito.');
-      } catch (error) {
-        console.error('Error al guardar el archivo:', error);
-        alert('Hubo un error al guardar el código. Por favor, revisa la consola para más detalles.');
+        const { data } = await octokit.request('GET /user');
+        console.log(`Autenticado como: ${data.login}`);
+      } catch (err) {
+        console.error('Error de autenticación:', err);
+        alert('Error al autenticar. Verifica el token.');
+        return;
       }
-    });
+
+      // Función para obtener el SHA del archivo si existe
+      async function getFileSHA() {
+        try {
+          const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+            owner: 'null-point-sys',
+            repo: 'spring_boot_rest_api_crud',
+            path: 'src/main/java/com/example/demo/UserCode.java',
+          });
+          return data.sha; // Retorna el SHA si el archivo existe
+        } catch (err) {
+          if (err.status === 404) {
+            console.log('Archivo no existe. Se creará uno nuevo.');
+            return null; // Retorna null si el archivo no existe
+          } else if (err.status === 401) {
+            alert('Credenciales inválidas. Verifica tu token.');
+          } else {
+            console.error('Error al obtener SHA del archivo:', err);
+          }
+          throw err;
+        }
+      }
+
+      // Evento del botón para guardar el código
+      document.getElementById('saveCode').addEventListener('click', async () => {
+        const code = editor.getValue(); // Obtener el código del editor
+
+        // Validar el código antes de enviarlo
+        if (!code.trim()) {
+          alert('El código no puede estar vacío.');
+          return;
+        }
+
+        const contentBase64 = toBase64(code); // Convertir a Base64
+
+        try {
+          const sha = await getFileSHA(); // Obtener el SHA del archivo
+
+          // Crear o actualizar el archivo en el repositorio
+          await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+            owner: 'null-point-sys',
+            repo: 'spring_boot_rest_api_crud',
+            path: 'src/main/java/com/example/demo/UserCode.java',
+            message: 'User submitted code',
+            committer: {
+              name: 'Ale',
+              email: 'jaalza@example.com',
+            },
+            content: contentBase64,
+            sha: sha || undefined, // Incluye SHA solo si el archivo existe
+          });
+
+          alert('Código guardado con éxito.');
+        } catch (error) {
+          console.error('Error al guardar el archivo:', error);
+          alert('Hubo un error al guardar el código. Por favor, revisa la consola para más detalles.');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
+
