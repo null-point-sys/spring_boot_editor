@@ -1,0 +1,64 @@
+name: Backend Node.js con GitHub Actions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-run-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Configurar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # 3. Instalar dependencias del backend
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Descargar e instalar ngrok
+      - name: Install ngrok
+        run: |
+          curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz | tar xz -C /tmp
+          sudo mv /tmp/ngrok /usr/local/bin/ngrok
+
+      # 5. Ejecutar el servidor backend con ngrok
+      - name: Run backend server with ngrok
+        id: ngrok
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        run: |
+          nohup ngrok config add-authtoken $NGROK_AUTH_TOKEN > /dev/null 2>&1
+          nohup ngrok http 3000 > ngrok.log &
+          sleep 5  # Esperar que ngrok esté listo
+          NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
+
+      # 6. Generar el archivo ngrok-url.json
+      - name: Generate ngrok URL file
+        run: |
+          echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
+
+      # 7. Verificar el contenido de ngrok-url.json
+      - name: Debug ngrok URL
+        run: cat ngrok-url.json
+
+      - name: Deploy ngrok URL to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # Asegúrate de que el archivo esté en la raíz
+          publish_branch: gh-pages
+          keep_files: true
+
+      # 9. Ejecutar el backend
+      - name: Run backend server
+        run: node server.js
