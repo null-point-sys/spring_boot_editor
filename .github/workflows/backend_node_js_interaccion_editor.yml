@@ -42,9 +42,16 @@ jobs:
           NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
 
-      # 6. Guardar la URL de ngrok en un archivo JSON
-      - name: Save ngrok URL to JSON file
-        run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > public/ngrok-url.json
+      - name: Generate ngrok URL file
+        run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
+
+      
+      - name: Deploy ngrok URL to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # Asegúrate de que el archivo esté en la raíz
+
 
       # 7. Ejecutar el backend
       - name: Run backend server
