@@ -24,9 +24,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Ejecutar el servidor Node.js
+      # 4. Instalar ngrok
+      - name: Install ngrok
+        run: |
+          curl -s https://ngrok.com/download | tar xz -C /tmp
+          sudo mv /tmp/ngrok /usr/local/bin
+
+      # 5. Iniciar el servidor Node.js con ngrok
+      - name: Run backend server with ngrok
+        run: |
+          nohup ngrok http 3000 &  # Iniciar ngrok en segundo plano
+          sleep 5  # Esperar a que ngrok genere la URL pública
+          echo "ngrok URL: $(curl --silent --show-error --retry 10 --retry-delay 2 http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url)"  # Obtener la URL pública de ngrok
+
+      # 6. Ejecutar el servidor Node.js
       - name: Run backend server
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usa el token automático
-        run: node server.js
-
+        run: |
+          node server.js  # Inicia el servidor Node.js
