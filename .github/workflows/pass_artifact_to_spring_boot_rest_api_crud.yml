@@ -1,6 +1,6 @@
 name: Handle User Code Updates
 
-on:
+ on:
   push:
     paths:
       - 'UserCode.java' # Solo se activa si este archivo cambia
