@@ -42,26 +42,23 @@ jobs:
           NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
 
+      # 6. Generar el archivo ngrok-url.json
       - name: Generate ngrok URL file
         run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
 
-      # 7. Subir ngrok-url.json a GitHub Pages
-      - name: Commit and push ngrok-url.json
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout gh-pages
-          git add ngrok-url.json
-          git commit -m "Add ngrok-url.json"
-          git push origin gh-pages
-      
-      - name: Deploy ngrok URL to gh-pages
+      # 7. Verificar el contenido de ngrok-url.json
+      - name: Debug ngrok URL
+        run: cat ngrok-url.json
+
+      # 8. Publicar el archivo en GitHub Pages
+      - name: Deploy ngrok-url.json to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # Asegúrate de que el archivo esté en la raíz
+          publish_dir: ./  # Asegúrate de que el archivo ngrok-url.json esté en el directorio raíz
+          destination_dir: .  # Publicar en la raíz del sitio
 
-
-      # 7. Ejecutar el backend
+      # 9. Ejecutar el backend
       - name: Run backend server
         run: node server.js
+
