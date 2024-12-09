@@ -30,7 +30,7 @@ jobs:
           curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz | tar xz -C /tmp
           sudo mv /tmp/ngrok /usr/local/bin/ngrok
 
-            # 5. Ejecutar el servidor backend con ngrok
+      # 5. Ejecutar el servidor backend con ngrok
       - name: Run backend server with ngrok
         id: ngrok
         env:
@@ -42,11 +42,10 @@ jobs:
           NGROK_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
 
-      # 6. Imprimir la URL pública de ngrok (opcional)
-      - name: Print ngrok URL
-        run: echo "Public URL for Backend: ${{ env.NGROK_URL }}"
+      # 6. Guardar la URL de ngrok en un archivo JSON
+      - name: Save ngrok URL to JSON file
+        run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > public/ngrok-url.json
 
       # 7. Ejecutar el backend
       - name: Run backend server
         run: node server.js
-
