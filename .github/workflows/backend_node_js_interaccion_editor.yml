@@ -24,11 +24,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Instalar ngrok
+     # 4. Instalar ngrok
       - name: Install ngrok
         run: |
-          curl -s https://ngrok.com/download | tar xz -C /tmp
-          sudo mv /tmp/ngrok /usr/local/bin
+          # Descargar y descomprimir la versión de ngrok para Linux 64-bit
+          curl -s https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -o ngrok.zip
+          unzip ngrok.zip
+          sudo mv ngrok /usr/local/bin
+          rm ngrok.zip  # Limpiar el archivo zip descargado
+
 
       # 5. Iniciar el servidor Node.js con ngrok
       - name: Run backend server with ngrok
