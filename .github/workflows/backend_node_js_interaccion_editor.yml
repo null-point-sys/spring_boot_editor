@@ -1,0 +1,29 @@
+name: Backend Node.js con GitHub Actions
+
+on:
+  push:
+    branches:
+      - gh-pages  # O cualquier rama en la que quieras activar el workflow
+
+jobs:
+  build-and-run-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Hacemos checkout del código del repositorio
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Puedes usar la versión de Node.js que necesites
+
+      - name: Install dependencies
+        run: |
+          npm install  # Instalar dependencias de tu backend Node.js
+
+      - name: Run backend server
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Aquí usamos el GITHUB_TOKEN automático
+        run: |
+          node server.js  # Ejecutar el servidor Node.js
