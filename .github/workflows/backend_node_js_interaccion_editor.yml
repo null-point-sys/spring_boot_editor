@@ -44,7 +44,8 @@ jobs:
 
       # 6. Generar el archivo ngrok-url.json
       - name: Generate ngrok URL file
-        run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
+        run: |
+          echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
 
       # 7. Verificar el contenido de ngrok-url.json
       - name: Debug ngrok URL
