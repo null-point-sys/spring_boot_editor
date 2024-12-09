@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: null-point-sys/spring_boot_rest_api_crud
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SPRING_BOOT_REPO_PAT }}
 
       - name: Download Artifact
         uses: actions/download-artifact@v3
