@@ -1,0 +1,53 @@
+name: Start Node.js Server with Ngrok
+
+on:
+  push:
+    branches:
+      - main  # O cualquier rama que desees
+  workflow_dispatch:  # Permite ejecutar este workflow manualmente
+
+jobs:
+  start-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Paso 3: Instalar dependencias
+      - name: Install dependencies
+        run: npm install
+
+      # Paso 4: Iniciar servidor Node.js en segundo plano
+      - name: Start Node.js server
+        run: |
+          nohup node server.js &  # Inicia el servidor en segundo plano
+          sleep 5  # Espera 5 segundos para asegurarse de que el servidor esté corriendo
+
+      # Paso 5: Instalar y exponer el servidor con Ngrok
+      - name: Install Ngrok
+        run: |
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+          ./ngrok http 3000 > /dev/null &  # Exponer el puerto 3000 con Ngrok
+
+      # Paso 6: Obtener la URL de Ngrok
+      - name: Get Ngrok URL
+        run: |
+          sleep 10  # Espera a que Ngrok se inicie
+          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' > ngrok-url.txt
+          cat ngrok-url.txt  # Muestra la URL de Ngrok
+
+      # Paso 7: Subir archivo de la URL de Ngrok (opcional)
+      - name: Upload Ngrok URL
+        uses: actions/upload-artifact@v3
+        with:
+          name: ngrok-url
+          path: ngrok-url.txt
