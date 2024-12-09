@@ -51,13 +51,13 @@ jobs:
       - name: Debug ngrok URL
         run: cat ngrok-url.json
 
-      # 8. Publicar el archivo en GitHub Pages
-      - name: Deploy ngrok-url.json to GitHub Pages
+      - name: Deploy ngrok URL to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # Asegúrate de que el archivo ngrok-url.json esté en el directorio raíz
-          destination_dir: .  # Publicar en la raíz del sitio
+          publish_dir: ./  # Asegúrate de que el archivo esté en la raíz
+          publish_branch: gh-pages
+          keep_files: true
 
       # 9. Ejecutar el backend
       - name: Run backend server
