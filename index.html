@@ -3,38 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Octokit API Example</title>
+  <title>Code Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.css" />
 </head>
 <body>
-  <h1>Octokit.js Example</h1>
-  <button id="getUserInfo">Get User Info</button>
+  <h1>Editor de Código</h1>
+  <textarea id="editor"></textarea>
+  <button id="saveCode">Guardar Código</button>
   <pre id="output"></pre>
 
-  <script type="module">
-    import { Octokit } from "https://esm.sh/octokit";
-
-    // Crear una instancia de Octokit con el token de acceso personal
-    const octokit = new Octokit({
-      auth: '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', // Reemplaza con tu propio token de acceso personal
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/mode/clike/clike.js"></script>
+  <script>
+    // Inicializar CodeMirror
+    const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+      mode: 'text/x-java',
+      lineNumbers: true,
     });
 
-    // Función para obtener información del usuario autenticado
-    async function getUserInfo() {
-      try {
-        // Obtener los datos del usuario autenticado
-        const { data } = await octokit.rest.users.getAuthenticated();
-        console.log('Usuario autenticado:', data.login);
-
-        // Mostrar el nombre de usuario en la interfaz
-        document.getElementById('output').textContent = `Hola, ${data.login}`;
-      } catch (error) {
-        console.error('Error al obtener el usuario:', error);
-        document.getElementById('output').textContent = 'Error al obtener los datos del usuario.';
+    // Guardar código como archivo local
+    document.getElementById('saveCode').addEventListener('click', () => {
+      const code = editor.getValue();
+      if (!code.trim()) {
+        alert('El código no puede estar vacío.');
+        return;
       }
-    }
 
-    // Evento al hacer clic en el botón
-    document.getElementById('getUserInfo').addEventListener('click', getUserInfo);
+      // Crear archivo Blob y descargarlo como UserCode.java
+      const blob = new Blob([code], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'UserCode.java';
+      link.click();
+      
+      document.getElementById('output').textContent = 'Archivo UserCode.java guardado exitosamente.';
+    });
   </script>
 </body>
 </html>
