@@ -45,6 +45,15 @@ jobs:
       - name: Generate ngrok URL file
         run: echo "{\"url\": \"${{ env.NGROK_URL }}\"}" > ngrok-url.json
 
+      # 7. Subir ngrok-url.json a GitHub Pages
+      - name: Commit and push ngrok-url.json
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout gh-pages
+          git add ngrok-url.json
+          git commit -m "Add ngrok-url.json"
+          git push origin gh-pages
       
       - name: Deploy ngrok URL to gh-pages
         uses: peaceiris/actions-gh-pages@v3
