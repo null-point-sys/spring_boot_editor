@@ -61,39 +61,27 @@
       theme: "default",
     });
 
-    // Almacenar el código en el backend
     document.getElementById('saveCode').addEventListener('click', () => {
-      const code = editor.getValue(); // Obtener el código del editor
-      const messageBox = document.getElementById('message');
-
-      fetch('https://api.github.com/repos/null-point-sys/spring_boot_editor/contents/UserCode.java', {
-        method: 'PUT',
+      const code = editor.getValue();  // Obtén el código del editor
+    
+      // Envía el código al backend, sin involucrar el GITHUB_TOKEN en el frontend
+      fetch('http://localhost:3000/save-code', { // Cambia a la URL de tu backend
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GITHUB_TOKEN}` // El token se gestiona por el workflow
         },
-        body: JSON.stringify({
-          message: 'Update UserCode.java from editor',
-          content: btoa(code), // Convertir el código a Base64
-          branch: 'main' // Asegúrate de usar la rama correcta
-        })
+        body: JSON.stringify({ code }),  // Envía el código como JSON
       })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Error al guardar el archivo: ' + response.statusText);
-        }
-      })
+      .then(response => response.json())
       .then(data => {
-        messageBox.textContent = 'Código guardado exitosamente.';
-        messageBox.className = 'message';
+        alert(data.message);  // Muestra el mensaje del backend
       })
       .catch(error => {
-        messageBox.textContent = 'Error: ' + error.message;
-        messageBox.className = 'error';
+        console.error('Error al guardar el código:', error);
+        alert('Error al guardar el código');
       });
     });
+
   </script>
 </body>
 </html>
