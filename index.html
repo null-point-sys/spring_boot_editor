@@ -15,21 +15,27 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100vh;
       background-color: #f4f4f9;
     }
 
-    #editor {
-      width: 80%;
-      height: 50%;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #fff;
-      overflow: hidden;
+    h1 {
+      margin-top: 20px;
     }
 
-    #saveCode {
+    #editor-container {
+      width: 90%;
+      max-width: 1200px;
+      margin-top: 20px;
+    }
+
+    #code-editor {
+      height: 400px;
+      width: 100%;
+    }
+
+    #save-button {
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
@@ -40,66 +46,65 @@
       cursor: pointer;
     }
 
-    #saveCode:hover {
+    #save-button:hover {
       background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <div id="editor-container">
-  <h1>Java Code Editor</h1>
-  <textarea id="code-editor"></textarea> <!-- Cambiado a <textarea> -->
-  <button id="save-button">Save Code</button>
-  <div id="loadingMessage" style="display: none;">Cargando...</div>
+    <h1>Java Code Editor</h1>
+    <textarea id="code-editor"></textarea>
+    <button id="save-button">Save Code</button>
+    <div id="loadingMessage" style="display: none;">Cargando...</div>
   </div>
 
   <script>
+    // Código base para el editor
+    const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
 
-      // Código base para el editor
-      const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
-      
-      // Inicializar CodeMirror con el código base
-      const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-          value: initialJavaCode, // Código inicial
-          mode: "text/x-java",
-          theme: "default",
-          lineNumbers: true,
-          autoCloseBrackets: true,
-      });
-      
-      // Manejo del botón para guardar el código
-      document.getElementById('save-button').addEventListener('click', () => {
-          const code = editor.getValue().trim(); // Obtener el código ingresado
-      
-          if (!code) {
-              alert('El código está vacío. Escribe algo antes de guardar.');
-              return;
-          }
-      
-          // Enviar el código al backend para que lo guarde en GitHub
-          fetch('https://www.refactorii.com/save-code', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                  code: code // El código ingresado
-              })
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  alert('Código guardado exitosamente');
-              } else {
-                  alert('Hubo un error al guardar el código');
-              }
-          })
-          .catch(error => {
-              console.error('Error al enviar el código:', error);
-              alert('Hubo un error al enviar el código');
-          });
-      });
+    // Inicializar CodeMirror con el textarea
+    const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+      mode: "text/x-java",
+      theme: "default",
+      lineNumbers: true,
+      autoCloseBrackets: true,
+    });
 
+    // Establecer el contenido inicial
+    editor.setValue(initialJavaCode);
+
+    // Manejo del botón para guardar el código
+    document.getElementById('save-button').addEventListener('click', () => {
+      const code = editor.getValue().trim();
+
+      if (!code) {
+        alert('El código está vacío. Escribe algo antes de guardar.');
+        return;
+      }
+
+      // Enviar el código al backend
+      fetch('https://www.refactorii.com/save-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Código guardado exitosamente');
+        } else {
+          alert('Hubo un error al guardar el código');
+        }
+      })
+      .catch(error => {
+        console.error('Error al enviar el código:', error);
+        alert('Hubo un error al enviar el código');
+      });
+    });
   </script>
 </body>
 </html>
+
