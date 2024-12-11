@@ -51,8 +51,20 @@
   <button id="saveCode">Save Code</button>
 
   <script>
-    let backendUrl = ''; // URL del backend
-
+    // Configuración inicial de la URL del backend
+    let backendUrl = '';
+    
+    // Código base para el editor
+    const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
+    
+    // Inicializar CodeMirror con el código base
+    const editor = CodeMirror(document.getElementById('editor'), {
+      value: initialJavaCode, // Código inicial
+      mode: "text/x-java",
+      lineNumbers: true,
+      theme: "default",
+    });
+    
     // Mostrar un mensaje temporal mientras se carga la URL
     document.addEventListener('DOMContentLoaded', () => {
       const loadingMessage = document.getElementById('loadingMessage');
@@ -66,7 +78,7 @@
           return response.json();
         })
         .then(data => {
-          backendUrl = data.url; // Asignar la URL
+          backendUrl = data.url; // Asignar la URL del backend
           console.log(`Backend URL: ${backendUrl}`);
           loadingMessage.style.display = 'none';
         })
@@ -79,7 +91,7 @@
     
     // Manejo del botón para guardar el código
     document.getElementById('saveCode').addEventListener('click', () => {
-      const code = editor.getValue().trim(); // Eliminar espacios en blanco
+      const code = editor.getValue().trim(); // Obtén y limpia el código del editor
     
       if (!code) {
         alert('El código está vacío. Escribe algo antes de guardar.');
@@ -91,6 +103,7 @@
         return;
       }
     
+      // Realiza la petición para guardar el código
       fetch(`${backendUrl}/save-code`, {
         method: 'POST',
         headers: {
