@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/clike/clike.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+
+    #editor {
+      width: 80%;
+      height: 50%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    #saveCode {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #saveCode:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Java Code Editor</h1>
+  <div id="editor"></div>
+  <button id="saveCode">Save Code</button>
+
+  <script>
+    // Configuración de CodeMirror
+    const editor = CodeMirror(document.getElementById('editor'), {
+      value: `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}`,
+      mode: "text/x-java",
+      lineNumbers: true,
+      theme: "default",
+    });
+
+    let backendUrl = ''; // Inicializa la URL del backend como vacía
+
+    // Obtén la URL del backend desde el archivo JSON
+    fetch('ngrok-url.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        backendUrl = data.url; // Asigna la URL del backend
+        console.log(`Backend URL: ${backendUrl}`);
+      })
+      .catch(error => {
+        console.error('Error al obtener la URL del backend:', error);
+        alert('No se pudo conectar al backend. Intenta más tarde.');
+      });
+
+    document.getElementById('saveCode').addEventListener('click', () => {
+      const code = editor.getValue(); // Obtén el código del editor
+
+      if (!backendUrl) {
+        alert('El backend aún no está disponible. Intenta más tarde.');
+        return;
+      }
+
+      // Envía el código al backend usando la URL dinámica
+      fetch(`${backendUrl}/save-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }), // Envía el código como JSON
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message); // Muestra el mensaje del backend
+        })
+        .catch(error => {
+          console.error('Error al guardar el código:', error);
+          alert('Error al guardar el código');
+        });
+    });
+  </script>
+</body>
+</html>
