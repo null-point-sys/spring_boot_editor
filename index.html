@@ -51,52 +51,56 @@
   <button id="saveCode">Save Code</button>
 
   <script>
-    // Configuración de CodeMirror
-    const editor = CodeMirror(document.getElementById('editor'), {
-      value: `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}`,
-      mode: "text/x-java",
-      lineNumbers: true,
-      theme: "default",
+    let backendUrl = ''; // URL del backend
+
+    // Mostrar un mensaje temporal mientras se carga la URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const loadingMessage = document.getElementById('loadingMessage');
+      loadingMessage.style.display = 'block';
+    
+      fetch('ngrok-url.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error al obtener la URL del backend: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          backendUrl = data.url; // Asignar la URL
+          console.log(`Backend URL: ${backendUrl}`);
+          loadingMessage.style.display = 'none';
+        })
+        .catch(error => {
+          console.error(error);
+          alert('No se pudo conectar al backend. Intenta más tarde.');
+          loadingMessage.innerHTML = 'Error al cargar el backend.';
+        });
     });
-
-    let backendUrl = ''; // Inicializa la URL del backend como vacía
-
-    // Obtén la URL del backend desde el archivo JSON
-    fetch('ngrok-url.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        backendUrl = data.url; // Asigna la URL del backend
-        console.log(`Backend URL: ${backendUrl}`);
-      })
-      .catch(error => {
-        console.error('Error al obtener la URL del backend:', error);
-        alert('No se pudo conectar al backend. Intenta más tarde.');
-      });
-
+    
+    // Manejo del botón para guardar el código
     document.getElementById('saveCode').addEventListener('click', () => {
-      const code = editor.getValue(); // Obtén el código del editor
-
+      const code = editor.getValue().trim(); // Eliminar espacios en blanco
+    
+      if (!code) {
+        alert('El código está vacío. Escribe algo antes de guardar.');
+        return;
+      }
+    
       if (!backendUrl) {
         alert('El backend aún no está disponible. Intenta más tarde.');
         return;
       }
-
-      // Envía el código al backend usando la URL dinámica
+    
       fetch(`${backendUrl}/save-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code }), // Envía el código como JSON
+        body: JSON.stringify({ code }), // Envía el código
       })
         .then(response => {
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Error al guardar el código: ${response.status}`);
           }
           return response.json();
         })
@@ -104,10 +108,11 @@
           alert(data.message); // Muestra el mensaje del backend
         })
         .catch(error => {
-          console.error('Error al guardar el código:', error);
-          alert('Error al guardar el código');
+          console.error(error);
+          alert('Error al guardar el código.');
         });
     });
+
   </script>
 </body>
 </html>
