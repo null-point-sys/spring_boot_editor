@@ -52,35 +52,7 @@
   <div id="loadingMessage" style="display: none;">Cargando...</div>
   <script>
 
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java Code Editor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/default.min.css">
-    <style>
-        #editor {
-            height: 400px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div>
-        <h1>Java Code Editor</h1>
-        <textarea id="code-editor"></textarea>
-        <button id="save-button">Guardar Código</button>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
-
-    <script>
-
-     // Código base para el editor
+       // Código base para el editor
         const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
 
         // Inicializar CodeMirror con el código base
