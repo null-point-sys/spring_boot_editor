@@ -52,85 +52,107 @@
   <div id="loadingMessage" style="display: none;">Cargando...</div>
   <script>
 
-    // Configuración inicial de la URL del backend
-    let backendUrl = '';
-    
-    // Código base para el editor
-    const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
-    
-    // Inicializar CodeMirror con el código base
-    const editor = CodeMirror(document.getElementById('editor'), {
-      value: initialJavaCode, // Código inicial
-      mode: "text/x-java",
-      lineNumbers: true,
-      theme: "default",
-    });
-    
-    // Mostrar un mensaje temporal mientras se carga la URL
-    document.addEventListener('DOMContentLoaded', () => {
-      const loadingMessage = document.getElementById('loadingMessage');
-      loadingMessage.style.display = 'block';
-    
-      fetch('ngrok-url.json')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Error al obtener la URL del backend: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Verifica que el archivo JSON tenga el campo url
-          if (data && data.url) {
-            backendUrl = data.url; // Asignar la URL del backend
-            console.log(`Backend URL: ${backendUrl}`);
-            loadingMessage.style.display = 'none';
-          } else {
-            throw new Error('La URL del backend no está definida en el archivo JSON');
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          alert('No se pudo conectar al backend. Intenta más tarde.');
-          loadingMessage.innerHTML = 'Error al cargar el backend.';
-        });
-    });
-    
-    // Manejo del botón para guardar el código
-    document.getElementById('saveCode').addEventListener('click', () => {
-      const code = editor.getValue().trim(); // Obtén y limpia el código del editor
-    
-      if (!code) {
-        alert('El código está vacío. Escribe algo antes de guardar.');
-        return;
-      }
-    
-      if (!backendUrl) {
-        alert('El backend aún no está disponible. Intenta más tarde.');
-        return;
-      }
-    
-      // Realiza la petición para guardar el código
-      fetch(`${backendUrl}/save-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }), // Envía el código
+  // Configuración inicial de la URL del backend
+  let backendUrl = '';
+  
+  // Código base para el editor
+  const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
+  
+  // Inicializar CodeMirror con el código base
+  const editor = CodeMirror(document.getElementById('editor'), {
+    value: initialJavaCode, // Código inicial
+    mode: "text/x-java",
+    lineNumbers: true,
+    theme: "default",
+  });
+  
+  // Mostrar un mensaje temporal mientras se carga la URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const loadingMessage = document.getElementById('loadingMessage');
+    loadingMessage.style.display = 'block';
+  
+    fetch('ngrok-url.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error al obtener la URL del backend: ${response.status}`);
+        }
+        return response.json();
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Error al guardar el código: ${response.status}`);
-          }
-          return response.json();
+      .then(data => {
+        // Verifica que el archivo JSON tenga el campo url
+        if (data && data.url) {
+          backendUrl = data.url; // Asignar la URL del backend
+          console.log(`Backend URL: ${backendUrl}`);
+          loadingMessage.style.display = 'none';
+        } else {
+          throw new Error('La URL del backend no está definida en el archivo JSON');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        alert('No se pudo conectar al backend. Intenta más tarde.');
+        loadingMessage.innerHTML = 'Error al cargar el backend.';
+      });
+  });
+  
+  // Manejo del botón para guardar el código
+  document.getElementById('saveCode').addEventListener('click', () => {
+    const code = editor.getValue().trim(); // Obtén y limpia el código del editor
+  
+    if (!code) {
+      alert('El código está vacío. Escribe algo antes de guardar.');
+      return;
+    }
+  
+    if (!backendUrl) {
+      alert('El backend aún no está disponible. Intenta más tarde.');
+      return;
+    }
+  
+    // Solicitar al servidor para iniciar el servicio (llama al endpoint /start-server)
+    fetch(`${backendUrl}/start-server`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'start' }), // Inicia el servidor si no está en ejecución
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error al iniciar el servidor: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data.message); // Muestra mensaje de inicio del servidor
+  
+        // Ahora que el servidor está en marcha, realiza la petición para guardar el código
+        fetch(`${backendUrl}/save-code`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }), // Envía el código
         })
-        .then(data => {
-          alert(data.message); // Muestra el mensaje del backend
-        })
-        .catch(error => {
-          console.error(error);
-          alert('Error al guardar el código.');
-        });
-    });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Error al guardar el código: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            alert(data.message); // Muestra el mensaje del backend
+          })
+          .catch(error => {
+            console.error(error);
+            alert('Error al guardar el código.');
+          });
+      })
+      .catch(error => {
+        console.error(error);
+        alert('Error al iniciar el servidor.');
+      });
+  });  
 
   </script>
 </body>
