@@ -1,0 +1,26 @@
+name: Update Ngrok URL
+
+on:
+  workflow_dispatch:
+    inputs:
+      ngrok_url:
+        description: 'URL de Ngrok'
+        required: true
+        type: string
+
+jobs:
+  update-ngrok-url:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Update ngrok-url.json with new URL
+        run: |
+          echo "{\"ngrok_url\": \"${{ github.event.inputs.ngrok_url }}\"}" > ngrok-url.json
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add ngrok-url.json
+          git commit -m "Update Ngrok URL"
+          git push origin main  # o la rama gh-pages
