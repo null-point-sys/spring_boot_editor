@@ -51,6 +51,7 @@
   <button id="saveCode">Save Code</button>
 
   <script>
+
     // Configuración inicial de la URL del backend
     let backendUrl = '';
     
@@ -78,9 +79,14 @@
           return response.json();
         })
         .then(data => {
-          backendUrl = data.url; // Asignar la URL del backend
-          console.log(`Backend URL: ${backendUrl}`);
-          loadingMessage.style.display = 'none';
+          // Verifica que el archivo JSON tenga el campo url
+          if (data && data.url) {
+            backendUrl = data.url; // Asignar la URL del backend
+            console.log(`Backend URL: ${backendUrl}`);
+            loadingMessage.style.display = 'none';
+          } else {
+            throw new Error('La URL del backend no está definida en el archivo JSON');
+          }
         })
         .catch(error => {
           console.error(error);
