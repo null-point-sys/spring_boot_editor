@@ -46,57 +46,60 @@
   </style>
 </head>
 <body>
+  <div id="editor-container">
   <h1>Java Code Editor</h1>
-  <div id="editor"></div>
-  <button id="saveCode">Save Code</button>
+  <textarea id="code-editor"></textarea> <!-- Cambiado a <textarea> -->
+  <button id="save-button">Save Code</button>
   <div id="loadingMessage" style="display: none;">Cargando...</div>
+  </div>
+
   <script>
 
-       // Código base para el editor
-        const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
-
-        // Inicializar CodeMirror con el código base
-        const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-            value: initialJavaCode, // Código inicial
-            mode: "text/x-java",
-            theme: "default",
-            lineNumbers: true,
-            autoCloseBrackets: true,
-        });
-
-        // Manejo del botón para guardar el código
-        document.getElementById('save-button').addEventListener('click', () => {
-            const code = editor.getValue().trim(); // Obtener el código ingresado
-
-            if (!code) {
-                alert('El código está vacío. Escribe algo antes de guardar.');
-                return;
-            }
-
-            // Enviar el código al backend para que lo guarde en GitHub
-            fetch('https://www.refactorii.com/save-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    code: code // El código ingresado
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Código guardado exitosamente');
-                } else {
-                    alert('Hubo un error al guardar el código');
-                }
-            })
-            .catch(error => {
-                console.error('Error al enviar el código:', error);
-                alert('Hubo un error al enviar el código');
-            });
-        });
+      // Código base para el editor
+      const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
       
+      // Inicializar CodeMirror con el código base
+      const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+          value: initialJavaCode, // Código inicial
+          mode: "text/x-java",
+          theme: "default",
+          lineNumbers: true,
+          autoCloseBrackets: true,
+      });
+      
+      // Manejo del botón para guardar el código
+      document.getElementById('save-button').addEventListener('click', () => {
+          const code = editor.getValue().trim(); // Obtener el código ingresado
+      
+          if (!code) {
+              alert('El código está vacío. Escribe algo antes de guardar.');
+              return;
+          }
+      
+          // Enviar el código al backend para que lo guarde en GitHub
+          fetch('https://www.refactorii.com/save-code', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  code: code // El código ingresado
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  alert('Código guardado exitosamente');
+              } else {
+                  alert('Hubo un error al guardar el código');
+              }
+          })
+          .catch(error => {
+              console.error('Error al enviar el código:', error);
+              alert('Hubo un error al enviar el código');
+          });
+      });
+
   </script>
 </body>
 </html>
