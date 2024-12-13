@@ -5,8 +5,5 @@ public class UserCode {
         System.out.println("Hello, fff!");
     }
 
-    // Método a simular en el test
-    public String someMethod() {
-        return "Actual Output";
-    }
+  
 }
