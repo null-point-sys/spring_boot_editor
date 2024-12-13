@@ -61,8 +61,19 @@
 
   <script>
     // Código base para el editor
-    const initialJavaCode = `// Escribe tu código Java aquí\n\npublic class UserCode {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`;
-
+    const initialJavaCode = `// Escribe tu código Java aquí
+    
+    public class UserCode {
+        public static void main(String[] args) {
+            System.out.println("Hello, fff!");
+        }
+    
+        // Método a simular en el test
+        public String someMethod() {
+            return "Actual Output";
+        }
+    }`;
+    
     // Inicializar CodeMirror con el textarea
     const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
       mode: "text/x-java",
