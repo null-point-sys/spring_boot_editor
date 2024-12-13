@@ -2,6 +2,6 @@
 
 public class UserCode {
     public static void main(String[] args) {
-        System.out.println("Hello, asasdasdasdasd!");
+        System.out.println("Hello, github actions!");
     }
 }
