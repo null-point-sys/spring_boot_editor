@@ -56,10 +56,4 @@ jobs:
           https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/dispatches \
           -d '{"event_type":"new-artifact", "client_payload": {"artifact_id": "${{ env.artifact-id }}", "repo_owner": "null-point-sys", "repo_name": "spring_boot_editor"}}'
 
-      # 3. Disparar el evento repository_dispatch hacia el repositorio receptor
-      - name: Trigger repository_dispatch in front_testing
-        run: |
-          curl -X POST -H "Authorization: token ${{ secrets.SPRING_BOOT_EDITOR_ACCESS_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/null-point-sys/spring_boot_rest_api_crud/dispatches \
-          -d '{"event_type": "new-artifact", "client_payload": {"artifact_id": "${{ env.artifact-id }}", "repo_owner": "null-point-sys", "repo_name": "spring_boot_editor"}}'
+     
