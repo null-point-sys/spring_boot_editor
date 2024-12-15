@@ -1,10 +1,15 @@
 // Escribe tu código Java aquí
-    package com.example.demo;
-    public class UserCode {
-        public static void main(String[] args) {
-            System.out.println("Hello, fff!");
-        }
-    
-        // Método a simular en el test
-      
+package com.example.demo;
+
+public class UserCode implements UserCodeInterface {
+
+    public static void main(String[] args) {
+        System.out.println("Hello, fff!");
     }
+
+    // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
+    @Override
+    public String someMethod() {
+        throw new UnsupportedOperationException("Debes implementar this method.");
+    }
+}
