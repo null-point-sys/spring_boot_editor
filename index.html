@@ -57,11 +57,13 @@
     <textarea id="code-editor"></textarea>
     <button id="save-button">Save Code</button>
     <div id="loadingMessage" style="display: none;">Cargando...</div>
+     <!-- Sección para mostrar el resultado del test -->
+    <div id="result"></div>
   </div>
 
   <script>
     // Código base para el editor
-    const initialJavaCode = `// Escribe tu código Java aquí
+   /* const initialJavaCode = `// Escribe tu código Java aquí
       package com.example.demo;
       
       public class UserCode implements UserCodeInterface {
@@ -117,7 +119,93 @@
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
       });
+    }); */
+
+
+
+
+// Código base para el editor
+    const initialJavaCode = `// Escribe tu código Java aquí
+      package com.example.demo;
+      
+      public class UserCode implements UserCodeInterface {
+      
+          public static void main(String[] args) {
+              System.out.println("Hello, fff!");
+          }
+      
+          // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
+          @Override
+          public String someMethod() {
+              throw new UnsupportedOperationException("Debes implementar this method.");
+          }
+      }`;
+    
+    // Inicializar CodeMirror con el textarea
+    const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+      mode: "text/x-java",
+      theme: "default",
+      lineNumbers: true,
+      autoCloseBrackets: true,
     });
+
+    // Establecer el contenido inicial
+    editor.setValue(initialJavaCode);
+
+    // Manejo del botón para guardar el código
+    document.getElementById('save-button').addEventListener('click', () => {
+      const code = editor.getValue().trim();
+
+      if (!code) {
+        alert('El código está vacío. Escribe algo antes de guardar.');
+        return;
+      }
+
+      // Mostrar el mensaje de carga mientras se ejecuta la prueba
+      document.getElementById('loadingMessage').style.display = 'block';
+
+      // Enviar el código al backend (aquí puedes hacer que el flujo de tests se ejecute)
+      fetch('https://www.refactorii.com/save-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Ocultar el mensaje de carga después de la respuesta
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        // Mostrar el resultado del test recibido a través del curl
+        if (data.success === false) {
+          displayMessage("Error: El método someMethod() no está implementado correctamente.");
+        } else {
+          displayMessage("¡Los tests pasaron exitosamente!");
+        }
+      })
+      .catch(error => {
+        console.error('Error al enviar el código:', error);
+        alert('Hubo un error al enviar el código');
+      });
+    });
+
+    // Función para mostrar el mensaje en la página
+    function displayMessage(message) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<p style="color: red;">${message}</p>`;
+    }
+
+    // Función para manejar los mensajes enviados con el curl (por ejemplo, usando un webhook)
+    window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      const message = params.get('message'); // Obtener el mensaje pasado con curl
+      if (message) {
+        displayMessage(message);
+      }
+    };
+
+    
   </script>
 </body>
 </html>
