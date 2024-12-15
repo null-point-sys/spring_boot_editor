@@ -8,5 +8,5 @@
           }
       
           // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
-        
+          
       }
