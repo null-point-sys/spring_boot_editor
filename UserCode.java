@@ -8,5 +8,8 @@
           }
       
           // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
-
+          @Override
+          public String someMethod() {
+              throw new UnsupportedOperationException("Debes implementar this method.");
+          }
       }
