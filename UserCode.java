@@ -1,7 +1,6 @@
-// Escribe tu código Java aquí
-      package com.example.demo;
-      
-      public class UserCode implements UserCodeInterface {
+package com.example.demo;
+
+      public class UserCode {
       
           public static void main(String[] args) {
               System.out.println("Hello, fff!");
