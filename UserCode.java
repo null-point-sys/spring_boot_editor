@@ -8,7 +8,7 @@
         }
       
         // Método a simular en el test
-        // public String someMethod() {
-        //    return "Actual Output";
-        // }
+         public String someMethod() {
+            return "Actual Output";
+         }
     }
