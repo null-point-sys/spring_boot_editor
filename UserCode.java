@@ -7,7 +7,5 @@ package com.example.demo;
           }
       
           // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
-          public String someMethod() {
-              throw new UnsupportedOperationException("Debes implementar this method.");
-          }
+       
       }
