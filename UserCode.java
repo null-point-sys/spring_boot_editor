@@ -6,8 +6,5 @@ package com.example.demo;
               System.out.println("Hello, fff!");
           }
       
-          // Implementación inicial o placeholder (puede estar vacío o lanzar una excepción)
-          public String someMethod() {
-              throw new UnsupportedOperationException("Debes implementar this method.");
-          }
+        
       }
