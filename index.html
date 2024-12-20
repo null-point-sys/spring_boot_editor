@@ -129,10 +129,10 @@
     <textarea id="code-editor"></textarea>
     <div id="save-button-container">
       <button id="save-button">Save Code</button>
-      <div class="loading-icon" id="loadingIcon"></div>
     </div>
     <div id="progress">
       <div id="progress-status" class="status-pending">Pending</div>
+      <div class="loading-icon" id="loadingIcon"></div>
       <ul id="progress-steps"></ul>
       <div id="progressBar" style="width: 0%;"></div>
     </div>
@@ -201,7 +201,6 @@
       } finally {
         // Siempre rehabilitar el botón y ocultar el ícono de carga después de completar todo
         saveButton.disabled = false;
-        loadingIcon.style.display = 'none';
       }
     });
     
