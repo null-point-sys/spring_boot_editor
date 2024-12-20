@@ -257,6 +257,23 @@
           // Ocultar el ícono de carga si el progreso llega al 100%
           if (percentage === 100 && loadingIcon) {
             loadingIcon.style.display = 'none';
+            // Crear un enlace dinámico sobre la barra de progreso
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+              const link = document.createElement('a');
+              link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
+              link.target = '_blank'; // Abrir en una nueva pestaña
+              link.textContent = 'Ver informe detallado';
+              link.style.position = 'absolute';
+              link.style.left = '50%';
+              link.style.top = '50%';
+              link.style.transform = 'translate(-50%, -50%)';
+              link.style.color = 'white';
+              link.style.textDecoration = 'none';
+              link.style.fontWeight = 'bold';
+              progressBar.style.position = 'relative'; // Asegurarte de que el contenedor tenga posición relativa
+              progressBar.appendChild(link);
+            }
           }
         }
         
