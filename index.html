@@ -274,12 +274,7 @@
         
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
-      } finally {
-        // Ocultar el ícono de carga después de completar la llamada (con éxito o error)
-        if (loadingIcon) {
-          loadingIcon.style.display = 'none';
-        }
-      }
+      } 
     }
 
     setInterval(fetchProgressFromAPI, 5000);
