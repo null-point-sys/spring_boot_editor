@@ -170,7 +170,7 @@
         return;
       }
 
-      // Deshabilitar el botón y mostrar el icono de carga
+      // Deshabilitar el botón y mostrar el ícono de carga
       saveButton.disabled = true;
       loadingIcon.style.display = 'block';
 
@@ -193,29 +193,8 @@
       } catch (error) {
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
-      } finally {
-        // Rehabilitar el botón y ocultar el icono de carga
-        saveButton.disabled = false;
-        loadingIcon.style.display = 'none';
       }
     });
-
-    async function resetWorkflowProgress() {
-      await fetch('https://www.refactorii.com/test-result', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          steps: [
-            { step: "Downloading artifact", status: "pending" },
-            { step: "Compiling code", status: "pending" },
-            { step: "Running tests", status: "pending" }
-          ],
-          status: "pending"
-        })
-      });
-    }
 
     async function fetchProgressFromAPI() {
       try {
@@ -235,21 +214,18 @@
         const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
         const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
-        // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
           progressBar.style.width = `${percentage}%`;
           progressBar.innerText = `${percentage}%`;
         }
 
-        // Actualizar estado del progreso
         const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
           progressStatus.className = `status-${progress.status}`;
         }
 
-        // Actualizar pasos
         const stepsHtml = progress.steps
           .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`)
           .join('');
@@ -257,14 +233,19 @@
         if (stepsContainer) {
           stepsContainer.innerHTML = stepsHtml;
         }
+
+        // Ocultar ícono de carga al completar el progreso al 100%
+        if (percentage === 100) {
+          document.getElementById('loadingIcon').style.display = 'none';
+          document.getElementById('save-button').disabled = false;
+        }
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
       }
     }
 
-    setInterval(fetchProgressFromAPI, 5000);
+    setInterval(fetchProgressFromAPI, 1000);
     fetchProgressFromAPI();
   </script>
 </body>
 </html>
-
