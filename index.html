@@ -57,7 +57,11 @@
     <textarea id="code-editor"></textarea>
     <button id="save-button">Save Code</button>
     <div id="loadingMessage" style="display: none;">Cargando...</div>
-     <!-- Sección para mostrar el resultado del test -->
+    <!-- Barra de progreso -->
+    <div id="progressBarContainer" style="width: 100%; background: #ccc; margin-top: 20px; height: 30px;">
+      <div id="progressBar" style="width: 0; height: 100%; background: #2196f3; color: white; text-align: center; line-height: 30px;">0%</div>
+    </div>
+    <!-- Sección para mostrar el resultado del test -->
     <div id="result"></div>
   </div>
 
@@ -119,29 +123,58 @@
       });
     }); 
 
-      // Función de polling para verificar el resultado de los tests
-    function startPolling() {
-      const interval = setInterval(() => {
-        // Verificar el estado de los tests desde sessionStorage
-        const testStatus = sessionStorage.getItem('testStatus');
-        const testMessage = sessionStorage.getItem('testMessage');
-        
-        if (testStatus) {
-          // Mostrar el resultado de los tests
-          displayMessage(testMessage);
-          // Detener el polling cuando se reciba la respuesta
-          clearInterval(interval);
+     // Función para obtener el progreso desde la API
+    async function fetchProgressFromAPI() {
+      try {
+        const response = await fetch('https://www.refactorii.com/test-result'); // Cambia esta URL si es diferente
+        if (!response.ok) {
+          throw new Error("Error al cargar el progreso.");
         }
-      }, 5000); // Verificar cada 5 segundos
+        const progress = await response.json();
+
+        // Calcular porcentaje completado
+        const totalSteps = progress.steps.length;
+        const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
+        const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+        // Construir HTML para los pasos con estilos según el estado
+        const stepsHtml = progress.steps.map(step => `
+          <li class="status-${step.status}">${step.step}: ${step.status}</li>
+        `).join('');
+
+        // Actualizar la barra de progreso
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${percentage}%`;
+        progressBar.innerText = `${percentage}%`;
+
+        // Cambiar el color de la barra según el progreso
+        if (progress.status === "completed") {
+          progressBar.style.backgroundColor = '#4caf50'; // Verde al completarse
+        } else {
+          progressBar.style.backgroundColor = '#2196f3'; // Azul en progreso
+        }
+
+        // Actualizar DOM con los pasos y el estado general
+        document.getElementById('result').innerHTML = `
+          <ul>${stepsHtml}</ul>
+          <p>Status general: ${progress.status}</p>
+        `;
+
+        // Si el workflow está completo, detener el intervalo
+        if (progress.status === "completed") {
+          clearInterval(interval);
+          alert("Workflow completado exitosamente.");
+        }
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('result').innerText = 'Error al cargar el progreso.';
+      }
     }
 
-    // Función para mostrar el mensaje en la página
-    function displayMessage(message) {
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `<p style="color: ${message.includes('¡') ? 'green' : 'red'};">${message}</p>`;
-    }
-
-
+    // Intervalo para actualizar el progreso cada 5 segundos
+    const interval = setInterval(fetchProgressFromAPI, 5000);
+    fetchProgressFromAPI();
     
   </script>
 </body>
