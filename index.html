@@ -35,8 +35,14 @@
       width: 100%;
     }
 
-    #save-button {
+    #save-button-container {
       margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #save-button {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #007bff;
@@ -46,8 +52,28 @@
       cursor: pointer;
     }
 
-    #save-button:hover {
+    #save-button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #save-button:hover:enabled {
       background-color: #0056b3;
+    }
+
+    .loading-icon {
+      display: none;
+      width: 25px;
+      height: 25px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #4caf50;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     #progress {
@@ -91,30 +117,16 @@
       color: white;
       font-weight: bold;
     }
-
-    .loading-icon {
-      display: block;
-      margin: 20px auto;
-      width: 50px;
-      height: 50px;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #4caf50;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
   </style>
 </head>
 <body>
   <div id="editor-container">
     <h1>Java Code Editor</h1>
     <textarea id="code-editor"></textarea>
-    <button id="save-button">Save Code</button>
-    <div class="loading-icon" id="loadingIcon"></div>
+    <div id="save-button-container">
+      <button id="save-button">Save Code</button>
+      <div class="loading-icon" id="loadingIcon"></div>
+    </div>
     <div id="progress">
       <div id="progress-status" class="status-pending">Pending</div>
       <ul id="progress-steps"></ul>
@@ -146,38 +158,44 @@
 
     editor.setValue(initialJavaCode);
 
-    document.getElementById('save-button').addEventListener('click', () => {
+    document.getElementById('save-button').addEventListener('click', async () => {
       const code = editor.getValue().trim();
+      const saveButton = document.getElementById('save-button');
+      const loadingIcon = document.getElementById('loadingIcon');
 
       if (!code) {
         alert('El código está vacío. Escribe algo antes de guardar.');
         return;
       }
 
-      // Mostrar icono de carga
-      const loadingIcon = document.getElementById('loadingIcon');
+      // Deshabilitar el botón y mostrar el icono de carga
+      saveButton.disabled = true;
       loadingIcon.style.display = 'block';
 
-      fetch('https://www.refactorii.com/save-code', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ code })
-      })
-      .then(response => response.json())
-      .then(data => {
+      try {
+        const response = await fetch('https://www.refactorii.com/save-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code })
+        });
+        const data = await response.json();
+
         if (data.success) {
           alert('Código guardado exitosamente');
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
         } else {
           alert('Hubo un error al guardar el código');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
-      });
+      } finally {
+        // Rehabilitar el botón y ocultar el icono de carga
+        saveButton.disabled = false;
+        loadingIcon.style.display = 'none';
+      }
     });
 
     async function resetWorkflowProgress() {
@@ -237,12 +255,6 @@
         if (stepsContainer) {
           stepsContainer.innerHTML = stepsHtml;
         }
-
-        // Ocultar icono de carga si el flujo está completo
-        const loadingIcon = document.getElementById('loadingIcon');
-        if (progress.status === 'completed') {
-          loadingIcon.style.display = 'none';
-        }
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
       }
@@ -253,3 +265,4 @@
   </script>
 </body>
 </html>
+
