@@ -252,8 +252,12 @@
         // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
-          progressBar.style.width = `${percentage}%`; // Correcto: usas backticks para la interpolación
-          progressBar.innerText = `${percentage}%`;   // Correcto: usas backticks para la interpolación
+          progressBar.style.width = `${percentage}%`; 
+          progressBar.innerText = `${percentage}%`;   
+          // Ocultar el ícono de carga si el progreso llega al 100%
+          if (percentage === 100 && loadingIcon) {
+            loadingIcon.style.display = 'none';
+          }
         }
         
         // Actualizar estado del progreso
