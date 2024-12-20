@@ -50,17 +50,29 @@
       background-color: #0056b3;
     }
 
-    #loadingMessage {
-      display: none;
-      margin-top: 10px;
-      font-size: 16px;
-      color: #555;
-    }
-
     #progress {
       margin-top: 20px;
       width: 90%;
       max-width: 1200px;
+      text-align: center;
+    }
+
+    #progress-status {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status-pending {
+      color: #888; /* Gris */
+    }
+
+    .status-in-progress {
+      color: #ff9800; /* Naranja */
+    }
+
+    .status-completed {
+      color: #4caf50; /* Verde */
     }
 
     #progress-steps {
@@ -71,7 +83,7 @@
 
     #progressBar {
       height: 20px;
-      background-color: #4caf50; /* Verde */
+      background-color: #4caf50;
       border-radius: 5px;
       transition: width 0.5s ease;
       text-align: center;
@@ -81,7 +93,7 @@
     }
 
     .loading-icon {
-      display: none;
+      display: block;
       margin: 20px auto;
       width: 50px;
       height: 50px;
@@ -102,9 +114,9 @@
     <h1>Java Code Editor</h1>
     <textarea id="code-editor"></textarea>
     <button id="save-button">Save Code</button>
-    <div id="loadingMessage">Cargando...</div>
     <div class="loading-icon" id="loadingIcon"></div>
     <div id="progress">
+      <div id="progress-status" class="status-pending">Pending</div>
       <ul id="progress-steps"></ul>
       <div id="progressBar" style="width: 0%;"></div>
     </div>
@@ -142,9 +154,8 @@
         return;
       }
 
-      const loadingMessage = document.getElementById('loadingMessage');
+      // Mostrar icono de carga
       const loadingIcon = document.getElementById('loadingIcon');
-      loadingMessage.style.display = 'block';
       loadingIcon.style.display = 'block';
 
       fetch('https://www.refactorii.com/save-code', {
@@ -158,7 +169,7 @@
       .then(data => {
         if (data.success) {
           alert('Código guardado exitosamente');
-          resetWorkflowProgress(); // Restablecer los pasos a "pending"
+          resetWorkflowProgress(); // Reiniciar los pasos a "pending"
         } else {
           alert('Hubo un error al guardar el código');
         }
@@ -166,15 +177,10 @@
       .catch(error => {
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
-      })
-      .finally(() => {
-        loadingMessage.style.display = 'none';
-        loadingIcon.style.display = 'none';
       });
     });
 
     async function resetWorkflowProgress() {
-      // Reiniciar los pasos del workflow a "pending"
       await fetch('https://www.refactorii.com/test-result', {
         method: 'POST',
         headers: {
@@ -186,7 +192,7 @@
             { step: "Compiling code", status: "pending" },
             { step: "Running tests", status: "pending" }
           ],
-          status: "in_progress"
+          status: "pending"
         })
       });
     }
@@ -209,12 +215,21 @@
         const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
         const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
+        // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
           progressBar.style.width = `${percentage}%`;
           progressBar.innerText = `${percentage}%`;
         }
 
+        // Actualizar estado del progreso
+        const progressStatus = document.getElementById('progress-status');
+        if (progressStatus) {
+          progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
+          progressStatus.className = `status-${progress.status}`;
+        }
+
+        // Actualizar pasos
         const stepsHtml = progress.steps
           .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`)
           .join('');
@@ -222,12 +237,14 @@
         if (stepsContainer) {
           stepsContainer.innerHTML = stepsHtml;
         }
+
+        // Ocultar icono de carga si el flujo está completo
+        const loadingIcon = document.getElementById('loadingIcon');
+        if (progress.status === 'completed') {
+          loadingIcon.style.display = 'none';
+        }
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
-        const progressDiv = document.getElementById('progress');
-        if (progressDiv) {
-          progressDiv.innerText = 'Error al cargar el progreso.';
-        }
       }
     }
 
