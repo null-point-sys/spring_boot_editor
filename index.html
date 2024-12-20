@@ -189,6 +189,7 @@
 
         if (data.success) {
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
+          monitorProgressCompletion();
         } else {
           alert('Hubo un error al guardar el código');
         }
@@ -201,6 +202,19 @@
         loadingIcon.style.display = 'none';
       }
     });
+
+    function monitorProgressCompletion() {
+      const loadingIcon = document.getElementById('loadingIcon');
+      const interval = setInterval(async () => {
+ 
+        // Comprobar si el progreso llegó al 100%
+        const progressBar = document.getElementById('progressBar');
+        if (progressBar && progressBar.innerText === '100%') {
+          clearInterval(interval);
+          loadingIcon.style.display = 'none'; // Ocultar el ícono de carga
+        }
+      }, 1000); // Verificar cada segundo
+    }
 
     async function resetWorkflowProgress() {
       await fetch('https://www.refactorii.com/test-result', {
