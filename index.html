@@ -58,8 +58,9 @@
     <button id="save-button">Save Code</button>
     <div id="loadingMessage" style="display: none;">Cargando...</div>
     <!-- Barra de progreso -->
-    <div id="progressBarContainer" style="width: 100%; background: #ccc; margin-top: 20px; height: 30px;">
-      <div id="progressBar" style="width: 0; height: 100%; background: #2196f3; color: white; text-align: center; line-height: 30px;">0%</div>
+    <div id="progress">
+      <ul id="progress-steps"></ul>
+      <div id="progressBar" style="width: 0%; height: 20px; background-color: #2196f3;"></div>
     </div>
     <!-- Sección para mostrar el resultado del test -->
     <div id="result"></div>
@@ -125,54 +126,43 @@
 
     async function fetchProgressFromAPI() {
       try {
-        const response = await fetch('https://www.refactorii.com/test-result'); // Cambiar al endpoint correcto
+        const response = await fetch('https://www.refactorii.com/test-result');
         if (!response.ok) {
-          throw new Error("Error al cargar el progreso.");
+          throw new Error('Error al cargar el progreso.');
         }
-  
+    
         const progress = await response.json();
-  
+        console.log('Progreso recibido:', progress);
+    
         // Calcular porcentaje completado
         const totalSteps = progress.steps.length;
         const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
         const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
-  
-        // Construir HTML para los pasos con estilos según el estado
-        const stepsHtml = progress.steps.map(step => `
-          <li class="status-${step.status}">${step.step}: ${step.status}</li>
-        `).join('');
-  
-        // Actualizar la barra de progreso
+    
+        // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         progressBar.style.width = `${percentage}%`;
         progressBar.innerText = `${percentage}%`;
-  
-        // Cambiar el color de la barra según el progreso
-        if (progress.status === "completed") {
-          progressBar.style.backgroundColor = '#4caf50'; // Verde al completarse
-        } else {
-          progressBar.style.backgroundColor = '#2196f3'; // Azul en progreso
-        }
-  
-        // Actualizar DOM con los pasos y el estado general
-        document.getElementById('progress').innerHTML = `
-          <ul>${stepsHtml}</ul>
-          <p>Status general: ${progress.status}</p>
-        `;
+    
+        // Actualizar pasos
+        const stepsHtml = progress.steps.map(step => `
+          <li class="status-${step.status}">${step.step}: ${step.status}</li>
+        `).join('');
+        document.getElementById('progress-steps').innerHTML = stepsHtml;
+    
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
-        document.getElementById('progress').innerText = 'Error al cargar el progreso.';
+        const progressDiv = document.getElementById('progress');
+        if (progressDiv) {
+          progressDiv.innerText = 'Error al cargar el progreso.';
+        }
       }
-  }
-
-  // Función para iniciar el polling cada 5 segundos
-  function startPolling() {
+    }
+    
+    // Iniciar polling para actualizar cada 5 segundos
     setInterval(fetchProgressFromAPI, 5000);
-    fetchProgressFromAPI(); // Llamada inicial
-  }
+    fetchProgressFromAPI();
 
-  // Iniciar polling
-  startPolling();
     
   </script>
 </body>
