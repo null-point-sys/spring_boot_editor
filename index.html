@@ -50,8 +50,8 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-left: 31px;
-      width: 222px;
+      width:250px;
+      margin-left: 30px;
     }
 
     #save-button:disabled {
@@ -109,7 +109,7 @@
       margin-bottom: 10px;
     }
 
-    #progressBar {
+   #progressBar {
       height: 20px;
       background-color: #4caf50;
       border-radius: 5px;
@@ -118,7 +118,9 @@
       line-height: 20px;
       color: white;
       font-weight: bold;
+      margin-left: 30px 
     }
+    
   </style>
 </head>
 <body>
@@ -131,6 +133,7 @@
     </div>
     <div id="progress">
       <div id="progress-status" class="status-pending">Pending</div>
+      <div class="loading-icon" id="loadingIcon"></div>
       <ul id="progress-steps"></ul>
       <div id="progressBar" style="width: 0%;"></div>
     </div>
@@ -138,7 +141,7 @@
   </div>
 
   <script>
-    const initialJavaCode = package com.example.demo;
+    const initialJavaCode = `package com.example.demo;
 
     public class UserCode {
     
@@ -149,7 +152,7 @@
         public String someMethod() {
             throw new UnsupportedOperationException("Debes implementar this method.");
         }
-    };
+    };`
 
     const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
       mode: "text/x-java",
@@ -185,7 +188,6 @@
         const data = await response.json();
 
         if (data.success) {
-          alert('Código guardado exitosamente');
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
         } else {
           alert('Hubo un error al guardar el código');
@@ -266,4 +268,4 @@
     fetchProgressFromAPI();
   </script>
 </body>
-</html>
+</html> 
