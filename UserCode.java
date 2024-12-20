@@ -6,9 +6,5 @@ package com.example.demo;
             System.out.println("Hello, fff!");
         }
     
-      
-      
-        public String someMethod() {
-            throw new UnsupportedOperationException("Debes implementar this method.");
-        }
+     
     };
