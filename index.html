@@ -240,25 +240,26 @@
         // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
-          progressBar.style.width = ${percentage}%;
-          progressBar.innerText = ${percentage}%;
+          progressBar.style.width = `${percentage}%`; // Correcto: usas backticks para la interpolación
+          progressBar.innerText = `${percentage}%`;   // Correcto: usas backticks para la interpolación
         }
-
+        
         // Actualizar estado del progreso
         const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
-          progressStatus.className = status-${progress.status};
+          progressStatus.className = `status-${progress.status}`; // Correcto: usas backticks para crear la clase dinámica
         }
-
+        
         // Actualizar pasos
         const stepsHtml = progress.steps
-          .map(step => <li class="status-${step.status}">${step.step}: ${step.status}</li>)
+          .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`) // Correcto: usas backticks para la interpolación
           .join('');
         const stepsContainer = document.getElementById('progress-steps');
         if (stepsContainer) {
           stepsContainer.innerHTML = stepsHtml;
         }
+        
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
       }
