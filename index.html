@@ -177,6 +177,7 @@
       loadingIcon.style.display = 'block';
     
       try {
+        // Enviar el código al servidor
         const response = await fetch('https://www.refactorii.com/save-code', {
           method: 'POST',
           headers: {
@@ -184,38 +185,34 @@
           },
           body: JSON.stringify({ code }),
         });
+    
         const data = await response.json();
     
         if (data.success) {
-          resetWorkflowProgress(); // Reiniciar los pasos a "pending"
-          monitorProgressCompletion(); // Monitorear hasta el 100%
+          // Reiniciar el progreso del flujo y monitorear su finalización
+          await resetWorkflowProgress();
+          await monitorProgressCompletion();
         } else {
           alert('Hubo un error al guardar el código');
-          // Rehabilitar el botón si hay error
-          saveButton.disabled = false;
-          loadingIcon.style.display = 'none';
         }
       } catch (error) {
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
+      } finally {
+        // Siempre rehabilitar el botón y ocultar el ícono de carga después de completar todo
         saveButton.disabled = false;
         loadingIcon.style.display = 'none';
       }
     });
     
     async function monitorProgressCompletion() {
-      const loadingIcon = document.getElementById('loadingIcon');
-      const saveButton = document.getElementById('save-button');
-      const interval = setInterval(async () => {
-        // Simular comprobación del progreso
-        const progressBar = document.getElementById('progressBar');
+      const progressBar = document.getElementById('progressBar');
+      const interval = 1000; // Verificar cada segundo
     
-        if (progressBar && progressBar.innerText === '100%') {
-          clearInterval(interval);
-          loadingIcon.style.display = 'none'; // Ocultar ícono de carga al 100%
-          saveButton.disabled = false; // Rehabilitar botón al finalizar
-        }
-      }, 1000); // Verificar cada segundo
+      // Esperar hasta que el progreso llegue al 100%
+      while (progressBar && progressBar.innerText !== '100%') {
+        await new Promise((resolve) => setTimeout(resolve, interval));
+      }
     }
 
     async function resetWorkflowProgress() {
