@@ -141,7 +141,7 @@
   </div>
 
   <script>
-    const initialJavaCode = `package com.example.demo;
+    const initialJavaCode = package com.example.demo;
 
     public class UserCode {
     
@@ -152,7 +152,7 @@
         public String someMethod() {
             throw new UnsupportedOperationException("Debes implementar this method.");
         }
-    }`;
+    };
 
     const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
       mode: "text/x-java",
@@ -167,16 +167,16 @@
       const code = editor.getValue().trim();
       const saveButton = document.getElementById('save-button');
       const loadingIcon = document.getElementById('loadingIcon');
-    
+
       if (!code) {
         alert('El código está vacío. Escribe algo antes de guardar.');
         return;
       }
-    
+
       // Deshabilitar el botón y mostrar el icono de carga
       saveButton.disabled = true;
       loadingIcon.style.display = 'block';
-    
+
       try {
         const response = await fetch('https://www.refactorii.com/save-code', {
           method: 'POST',
@@ -186,10 +186,9 @@
           body: JSON.stringify({ code })
         });
         const data = await response.json();
-    
+
         if (data.success) {
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
-          monitorProgressCompletion(loadingIcon); // Mantener el icono cargando hasta el 100%
         } else {
           alert('Hubo un error al guardar el código');
         }
@@ -197,42 +196,11 @@
         console.error('Error al enviar el código:', error);
         alert('Hubo un error al enviar el código');
       } finally {
+        // Rehabilitar el botón y ocultar el icono de carga
         saveButton.disabled = false;
+        loadingIcon.style.display = 'none';
       }
     });
-    
-    function monitorProgressCompletion(loadingIcon) {
-      const interval = setInterval(async () => {
-        try {
-          const response = await fetch('https://www.refactorii.com/test-result-get', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-    
-          if (!response.ok) {
-            throw new Error('Error al cargar el progreso.');
-          }
-    
-          const progress = await response.json();
-          const totalSteps = progress.steps.length;
-          const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
-          const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
-    
-          // Si se completa el proceso, detener el intervalo y ocultar el icono de carga
-          if (percentage === 100) {
-            clearInterval(interval);
-            loadingIcon.style.display = 'none';
-          }
-        } catch (err) {
-          console.error('Error al verificar la finalización del progreso:', err);
-          clearInterval(interval);
-          loadingIcon.style.display = 'none';
-        }
-      }, 1000); // Verificar cada segundo
-    }
-
 
     async function resetWorkflowProgress() {
       await fetch('https://www.refactorii.com/test-result', {
@@ -272,20 +240,20 @@
         // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
-          progressBar.style.width = `${percentage}%`;
-          progressBar.innerText = `${percentage}%`;
+          progressBar.style.width = ${percentage}%;
+          progressBar.innerText = ${percentage}%;
         }
 
         // Actualizar estado del progreso
         const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
-          progressStatus.className = `status-${progress.status}`;
+          progressStatus.className = status-${progress.status};
         }
 
         // Actualizar pasos
         const stepsHtml = progress.steps
-          .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`)
+          .map(step => <li class="status-${step.status}">${step.step}: ${step.status}</li>)
           .join('');
         const stepsContainer = document.getElementById('progress-steps');
         if (stepsContainer) {
