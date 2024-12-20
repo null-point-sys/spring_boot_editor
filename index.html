@@ -131,7 +131,7 @@
       <button id="save-button">Save Code</button>
     </div>
     <div id="progress">
-      <div style="display: flex; align-items: center; gap: 10px;">
+      <div>
         <div id="progress-status" class="status-pending">Pending</div>
         <div class="loading-icon" id="loadingIcon"></div>
       </div>
@@ -276,6 +276,11 @@
         
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
+      } finally {
+        // Ocultar el ícono de carga después de completar la llamada (con éxito o error)
+        if (loadingIcon) {
+          loadingIcon.style.display = 'none';
+        }
       }
     }
 
