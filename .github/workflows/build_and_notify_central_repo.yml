@@ -16,6 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+        # Inicializar el progreso al API
+      - name: Initialize progress.json via API
+        run: |
+          curl -s -X POST https://www.refactorii.com/test-result \
+            -H "Content-Type: application/json" \
+            -d '{
+              "steps": [
+                {"step": "Downloading artifact", "status": "pending"},
+                {"step": "Compiling code", "status": "pending"},
+                {"step": "Running tests", "status": "pending"}
+              ],
+              "status": "in_progress"
+            }'
+
       # 2. Listar los archivos para verificar
       - name: Verify static build
         run: |
