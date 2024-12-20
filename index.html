@@ -185,7 +185,6 @@
         const data = await response.json();
 
         if (data.success) {
-          alert('Código guardado exitosamente');
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
         } else {
           alert('Hubo un error al guardar el código');
