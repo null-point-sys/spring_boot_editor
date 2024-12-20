@@ -50,8 +50,8 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      width:250px;
-      margin-left: 30px;
+      margin-left: 31px;
+      width: 222px;
     }
 
     #save-button:disabled {
@@ -109,7 +109,7 @@
       margin-bottom: 10px;
     }
 
-   #progressBar {
+    #progressBar {
       height: 20px;
       background-color: #4caf50;
       border-radius: 5px;
@@ -118,9 +118,7 @@
       line-height: 20px;
       color: white;
       font-weight: bold;
-      margin-left: 30px 
     }
-    
   </style>
 </head>
 <body>
@@ -133,7 +131,6 @@
     </div>
     <div id="progress">
       <div id="progress-status" class="status-pending">Pending</div>
-      <div class="loading-icon" id="loadingIcon"></div>
       <ul id="progress-steps"></ul>
       <div id="progressBar" style="width: 0%;"></div>
     </div>
@@ -188,6 +185,7 @@
         const data = await response.json();
 
         if (data.success) {
+          alert('Código guardado exitosamente');
           resetWorkflowProgress(); // Reiniciar los pasos a "pending"
         } else {
           alert('Hubo un error al guardar el código');
@@ -240,26 +238,25 @@
         // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
         if (progressBar) {
-          progressBar.style.width = `${percentage}%`;
-          progressBar.innerText = `${percentage}%`;
+          progressBar.style.width = ${percentage}%;
+          progressBar.innerText = ${percentage}%;
         }
-        
+
         // Actualizar estado del progreso
         const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
-          progressStatus.className = `status-${progress.status}`;
+          progressStatus.className = status-${progress.status};
         }
-        
+
         // Actualizar pasos
         const stepsHtml = progress.steps
-          .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`)
+          .map(step => <li class="status-${step.status}">${step.step}: ${step.status}</li>)
           .join('');
         const stepsContainer = document.getElementById('progress-steps');
         if (stepsContainer) {
           stepsContainer.innerHTML = stepsHtml;
         }
-
       } catch (err) {
         console.error('Error al obtener el progreso:', err);
       }
