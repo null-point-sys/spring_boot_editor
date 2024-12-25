@@ -251,7 +251,8 @@
 
         // Actualizar barra de progreso
         const progressBar = document.getElementById('progressBar');
-        const progressStatus = document.getElementById('progress-status'); // Obtenemos el elemento del estado del progreso
+        const progressStatus = document.getElementById('progress-status'); // Declarar fuera del bloque
+        
         if (progressBar) {
           progressBar.style.width = `${percentage}%`;
           progressBar.innerText = `${percentage}%`;
@@ -279,8 +280,10 @@
             }
           }
         }
+
+        
         // Actualizar estado del progreso
-        const progressStatus = document.getElementById('progress-status');
+        progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
           progressStatus.className = `status-${progress.status}`; // Correcto: usas backticks para crear la clase dinámica
