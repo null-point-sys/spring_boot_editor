@@ -252,7 +252,6 @@
 
     const progressBar = document.getElementById('progressBar');
     const loadingIcon = document.getElementById('loadingIcon'); // Ícono de carga
-    const progressStatus = document.getElementById('progress-status'); // Elemento para el estado del progreso
 
     if (progressBar) {
       progressBar.style.width = `${percentage}%`;
@@ -269,7 +268,8 @@
           loadingIcon.style.display = 'none';
         }
 
-        // Crear un enlace dinámico en el elemento de estado del progreso
+        // Crear un enlace dinámico para ver el informe detallado
+        const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           const link = document.createElement('a');
           link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
@@ -279,16 +279,16 @@
           link.style.textDecoration = 'none';
           link.style.fontWeight = 'bold';
 
-          // Limpiar el contenido previo y añadir el enlace
-          progressStatus.innerHTML = '';
+          progressStatus.innerHTML = ''; // Limpiar contenido previo
           progressStatus.appendChild(link);
-          progressStatus.className = 'status-completed'; // Cambiar clase para reflejar finalización
+          progressStatus.className = 'status-completed'; // Cambiar clase
         }
       }
     }
 
-    // Actualizar estado del progreso si no está finalizado
-    if (progressStatus && percentage < 100) {
+    // Actualizar estado del progreso
+    const progressStatus = document.getElementById('progress-status');
+    if (progressStatus) {
       progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
       progressStatus.className = `status-${progress.status}`;
     }
@@ -305,6 +305,7 @@
     console.error('Error al obtener el progreso:', err);
   }
 }
+
 
   
       // Actualizar estado del progreso
