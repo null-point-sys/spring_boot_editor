@@ -278,7 +278,7 @@
 
         
         // Actualizar estado del progreso
-        progressStatus = document.getElementById('progress-status');
+        const progressStatus = document.getElementById('progress-status');
         if (progressStatus) {
           progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
           progressStatus.className = `status-${progress.status}`; // Correcto: usas backticks para crear la clase dinámica
