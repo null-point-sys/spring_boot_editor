@@ -140,166 +140,163 @@
   </div>
 
   <script>
-    const initialJavaCode = `package com.example.demo;
+  const initialJavaCode = `package com.example.demo;
 
-    public class UserCode {
-    
-        public static void main(String[] args) {
-            System.out.println("Hello, fff!");
-        }
-    
-        public String someMethod() {
-            throw new UnsupportedOperationException("Debes implementar this method.");
-        }
-    };`
+  public class UserCode {
 
-    const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-      mode: "text/x-java",
-      theme: "default",
-      lineNumbers: true,
-      autoCloseBrackets: true,
-    });
-
-    editor.setValue(initialJavaCode);
-
-    document.getElementById('save-button').addEventListener('click', async () => {
-      const code = editor.getValue().trim();
-      const saveButton = document.getElementById('save-button');
-      const loadingIcon = document.getElementById('loadingIcon');
-    
-      if (!code) {
-        alert('El código está vacío. Escribe algo antes de guardar.');
-        return;
+      public static void main(String[] args) {
+          System.out.println("Hello, fff!");
       }
-    
-      // Deshabilitar el botón y mostrar el ícono de carga
-      saveButton.disabled = true;
-      loadingIcon.style.display = 'block';
-    
-      try {
-        // Enviar el código al servidor
-        const response = await fetch('https://www.refactorii.com/save-code', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ code }),
-        });
-    
-        const data = await response.json();
-    
-        if (data.success) {
-          // Reiniciar el progreso del flujo y monitorear su finalización
-          await resetWorkflowProgress();
-          await monitorProgressCompletion();
-        } else {
-          alert('Hubo un error al guardar el código');
-        }
-      } catch (error) {
-        console.error('Error al enviar el código:', error);
-        alert('Hubo un error al enviar el código');
-      } finally {
-        // Siempre rehabilitar el botón y ocultar el ícono de carga después de completar todo
-        saveButton.disabled = false;
+
+      public String someMethod() {
+          throw new UnsupportedOperationException("Debes implementar this method.");
       }
-    });
-    
-    async function monitorProgressCompletion() {
-      const progressBar = document.getElementById('progressBar');
-      const interval = 1000; // Verificar cada segundo
-    
-      // Esperar hasta que el progreso llegue al 100%
-      while (progressBar && progressBar.innerText !== '100%') {
-        await new Promise((resolve) => setTimeout(resolve, interval));
-      }
+  };`;
+
+  const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+    mode: "text/x-java",
+    theme: "default",
+    lineNumbers: true,
+    autoCloseBrackets: true,
+  });
+
+  editor.setValue(initialJavaCode);
+
+  document.getElementById('save-button').addEventListener('click', async () => {
+    const code = editor.getValue().trim();
+    const saveButton = document.getElementById('save-button');
+    const loadingIcon = document.getElementById('loadingIcon');
+
+    if (!code) {
+      alert('El código está vacío. Escribe algo antes de guardar.');
+      return;
     }
 
-    async function resetWorkflowProgress() {
-      await fetch('https://www.refactorii.com/test-result', {
+    // Deshabilitar el botón y mostrar el ícono de carga
+    saveButton.disabled = true;
+    loadingIcon.style.display = 'block';
+
+    try {
+      // Enviar el código al servidor
+      const response = await fetch('https://www.refactorii.com/save-code', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          steps: [
-            { step: "Downloading artifact", status: "pending" },
-            { step: "Compiling code", status: "pending" },
-            { step: "Running tests", status: "pending" }
-          ],
-          status: "pending"
-        })
+        body: JSON.stringify({ code }),
       });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Reiniciar el progreso del flujo y monitorear su finalización
+        await resetWorkflowProgress();
+        await monitorProgressCompletion();
+      } else {
+        alert('Hubo un error al guardar el código');
+      }
+    } catch (error) {
+      console.error('Error al enviar el código:', error);
+      alert('Hubo un error al enviar el código');
+    } finally {
+      // Siempre rehabilitar el botón y ocultar el ícono de carga después de completar todo
+      saveButton.disabled = false;
+      loadingIcon.style.display = 'none';
     }
+  });
 
-    async function fetchProgressFromAPI() {
-      try {
-        const response = await fetch('https://www.refactorii.com/test-result-get', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  async function monitorProgressCompletion() {
+    const progressBar = document.getElementById('progressBar');
+    const interval = 1000; // Verificar cada segundo
 
-        if (!response.ok) {
-          throw new Error('Error al cargar el progreso.');
-        }
+    // Esperar hasta que el progreso llegue al 100%
+    while (progressBar && progressBar.innerText !== '100%') {
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+  }
 
-        const progress = await response.json();
-        const totalSteps = progress.steps.length;
-        const completedSteps = progress.steps.filter(step => step.status === 'completed').length;
-        const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+  async function resetWorkflowProgress() {
+    await fetch('https://www.refactorii.com/test-result', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        steps: [
+          { step: "Downloading artifact", status: "pending" },
+          { step: "Compiling code", status: "pending" },
+          { step: "Running tests", status: "pending" },
+        ],
+        status: "pending",
+      }),
+    });
+  }
 
-        const progressBar = document.getElementById('progressBar');
-        if (progressBar) {
-          progressBar.style.width = ${percentage}%; 
-          progressBar.innerText = ${percentage}%;   
-          // Ocultar el ícono de carga si el progreso llega al 100%
-          if (percentage === 100 && loadingIcon) {
-            loadingIcon.style.display = 'none';
-            // Crear un enlace dinámico sobre la barra de progreso
-            const progressBar = document.getElementById('progressBar');
-            if (progressBar) {
-              const link = document.createElement('a');
-              link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
-              link.target = '_blank'; // Abrir en una nueva pestaña
-              link.textContent = 'Ver informe detallado';
-              link.style.position = 'absolute';
-              link.style.left = '50%';
-              link.style.top = '50%';
-              link.style.transform = 'translate(-50%, -50%)';
-              link.style.color = 'white';
-              link.style.textDecoration = 'none';
-              link.style.fontWeight = 'bold';
-              progressBar.style.position = 'relative'; // Asegurarte de que el contenedor tenga posición relativa
-              progressBar.appendChild(link);
-            }
+  async function fetchProgressFromAPI() {
+    try {
+      const response = await fetch('https://www.refactorii.com/test-result-get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar el progreso.');
+      }
+
+      const progress = await response.json();
+      const totalSteps = progress.steps.length;
+      const completedSteps = progress.steps.filter((step) => step.status === 'completed').length;
+      const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+      const progressBar = document.getElementById('progressBar');
+      const progressStatus = document.getElementById('progress-status');
+
+      if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+        progressBar.innerText = `${percentage}%`;
+
+        // Ocultar el ícono de carga si el progreso llega al 100%
+        if (percentage === 100) {
+          const link = document.createElement('a');
+          link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
+          link.target = '_blank'; // Abrir en una nueva pestaña
+          link.textContent = 'Ver informe detallado';
+          link.style.color = '#007bff';
+          link.style.textDecoration = 'none';
+          link.style.fontWeight = 'bold';
+
+          if (progressStatus) {
+            progressStatus.innerHTML = ''; // Limpiar el contenido previo
+            progressStatus.appendChild(link);
+            progressStatus.className = 'status-completed'; // Cambiar estilo
           }
-        } 
+        }
+      }
 
-        
-        // Actualizar estado del progreso
-        const progressStatus = document.getElementById('progress-status');
-        if (progressStatus) {
-          progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
-          progressStatus.className = `status-${progress.status}`; // Correcto: usas backticks para crear la clase dinámica
-        }
-        
-        // Actualizar pasos
-        const stepsHtml = progress.steps
-          .map(step => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`) // Correcto: usas backticks para la interpolación
-          .join('');
-        const stepsContainer = document.getElementById('progress-steps');
-        if (stepsContainer) {
-          stepsContainer.innerHTML = stepsHtml;
-        }
-        
-      } catch (err) {
-        console.error('Error al obtener el progreso:', err);
-      } 
+      // Actualizar estado del progreso
+      if (progressStatus) {
+        progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
+        progressStatus.className = `status-${progress.status}`;
+      }
+
+      // Actualizar pasos
+      const stepsHtml = progress.steps
+        .map((step) => `<li class="status-${step.status}">${step.step}: ${step.status}</li>`)
+        .join('');
+      const stepsContainer = document.getElementById('progress-steps');
+      if (stepsContainer) {
+        stepsContainer.innerHTML = stepsHtml;
+      }
+    } catch (err) {
+      console.error('Error al obtener el progreso:', err);
     }
+  }
 
-    setInterval(fetchProgressFromAPI, 5000);
-    fetchProgressFromAPI();
-  </script>
+  setInterval(fetchProgressFromAPI, 5000);
+  fetchProgressFromAPI();
+</script>
+
 </body>
 </html> 
