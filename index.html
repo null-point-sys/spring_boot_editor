@@ -352,7 +352,6 @@
   
       const progressBar = document.getElementById('progressBar');
       const loadingIcon = document.getElementById('loadingIcon'); // Ícono de carga
-      const progressStatus = document.getElementById('progress-status'); // Elemento para el estado del progreso
   
       if (progressBar) {
         // Actualiza la variable CSS para el ancho de ::before
@@ -372,34 +371,20 @@
         } else {
           // Ocultar el ícono de carga cuando el progreso esté al 100%
           if (loadingIcon) {
+            // Reemplazar el ícono de carga por el enlace "Ver informe detallado"
+            const link = document.createElement('a');
+            link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
+            link.target = '_blank'; // Abrir en una nueva pestaña
+            link.textContent = 'Ver informe detallado';
+            link.style.color = '#007bff';
+            link.style.textDecoration = 'none';
+            link.style.fontWeight = 'bold';
+  
+            // Ocultar el ícono de carga y agregar el enlace
             loadingIcon.style.display = 'none';
-          }
-  
-          // Crear un enlace dinámico cuando se complete el progreso
-          if (progressStatus) {
-            // Verifica si el enlace ya existe, para no duplicarlo
-            if (!progressStatus.querySelector('a')) {
-              const link = document.createElement('a');
-              link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
-              link.target = '_blank'; // Abrir en una nueva pestaña
-              link.textContent = 'Ver informe detallado';
-              link.style.color = '#007bff';
-              link.style.textDecoration = 'none';
-              link.style.fontWeight = 'bold';
-  
-              // Limpiar el contenido previo y añadir el enlace
-              progressStatus.innerHTML = '';
-              progressStatus.appendChild(link);
-              progressStatus.className = 'status-completed'; // Cambiar clase para reflejar finalización
-            }
+            loadingIcon.parentNode.appendChild(link);
           }
         }
-      }
-  
-      // Actualizar estado del progreso si no está finalizado
-      if (progressStatus && percentage < 100) {
-        progressStatus.textContent = progress.status.charAt(0).toUpperCase() + progress.status.slice(1);
-        progressStatus.className = `status-${progress.status}`;
       }
   
       // Actualizar lista de pasos
@@ -415,7 +400,6 @@
       console.error('Error al obtener el progreso:', err);
     }
   }
-
    
   setInterval(fetchProgressFromAPI, 3000);
   fetchProgressFromAPI();
