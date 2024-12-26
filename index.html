@@ -110,49 +110,36 @@
     }
 
    #progressBar {
-      height: 20px;
-      background-color: #4caf50;
-      border-radius: 5px;
-      transition: width 0.5s ease;
-      text-align: center;
-      line-height: 20px;
-      color: white;
-      font-weight: bold;
-      margin-left: 30px 
-    }
+    position: relative;
+    height: 20px;
+    background-color: #ddd; /* Fondo de la barra */
+    border-radius: 10px; /* Esquinas redondeadas */
+    overflow: hidden; /* Para evitar que el contenido desborde */
+  }
+  
+  #progressBar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress-width, 0%); /* Ancho dinámico desde variable CSS */
+    background-color: #4caf50; /* Color del progreso */
+    transition: width 0.5s ease; /* Animación suave */
+    z-index: 1; /* Fondo de la animación */
+  }
+  
+  #progressBar span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 20px;
+    font-weight: bold;
+    color: #fff; /* Texto blanco */
+    z-index: 2; /* Texto encima del progreso */
+  }
 
-   /* #progressBar {
-      height: 20px;
-      background-color: #e0e0e0; /* Color del fondo vacío */
-      border-radius: 5px;
-      overflow: hidden; /* Asegura que el contenido no se desborde */
-      position: relative;
-    } */
-    
-    #progressBar::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 0%;
-      background-color: #4caf50; /* Color del progreso */
-      transition: width 0.5s ease; /* Animación suave al avanzar */
-      z-index: 1; /* Asegura que esté delante */
-    }
-    
-    #progressBar span {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      line-height: 20px;
-      font-weight: bold;
-      color: white;
-      z-index: 2; /* Asegura que el texto esté encima */
-    }
-
-    
   </style>
 </head>
 <body>
