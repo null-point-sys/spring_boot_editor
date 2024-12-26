@@ -352,7 +352,7 @@
   
       const progressBar = document.getElementById('progressBar');
       const loadingIcon = document.getElementById('loadingIcon'); // Ícono de carga
-      const progressContainer = loadingIcon.parentNode; // Contenedor del ícono
+      const progressContainer = loadingIcon.parentNode; // Contenedor donde el ícono debe estar
   
       if (progressBar) {
         // Actualiza la variable CSS para el ancho de ::before
@@ -364,11 +364,12 @@
           progressText.textContent = `${percentage}%`;
         }
   
-        // Mostrar el ícono de carga mientras el progreso sea menor al 100%
+        // Si el progreso es menor al 100%, mostrar el ícono de carga
         if (percentage < 100) {
           if (loadingIcon) {
-            loadingIcon.style.display = 'block';
+            loadingIcon.style.display = 'inline-block'; // Asegura que el ícono esté visible y al lado del botón
           }
+  
           // Eliminar el enlace si el progreso no está al 100%
           const existingLink = progressContainer.querySelector('a[data-type="report-link"]');
           if (existingLink) {
@@ -391,9 +392,10 @@
             link.style.color = '#007bff';
             link.style.textDecoration = 'none';
             link.style.fontWeight = 'bold';
+            link.style.marginLeft = '10px'; // Espacio entre el enlace y el botón
             link.setAttribute('data-type', 'report-link'); // Identificador único para evitar duplicados
   
-            // Agregar el enlace al contenedor
+            // Agregar el enlace al contenedor al lado del ícono
             progressContainer.appendChild(link);
           }
         }
