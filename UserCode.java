@@ -7,7 +7,7 @@ package com.example.demo;
         }
   
         public String someMethod() {
-            //throw new UnsupportedOperationException("Debes implementar this method.");
-          return "rt";
+            throw new UnsupportedOperationException("Debes implementar this method.");
+          
         }
     };
