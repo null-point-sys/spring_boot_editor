@@ -353,6 +353,7 @@
       const progressBar = document.getElementById('progressBar');
       const loadingIcon = document.getElementById('loadingIcon'); // Ícono de carga
       const progressContainer = loadingIcon.parentNode; // Contenedor donde el ícono debe estar
+      const progressStatus = document.getElementById('progress-status'); // Elemento de estado
   
       if (progressBar) {
         // Actualiza la variable CSS para el ancho de ::before
@@ -375,6 +376,13 @@
           if (existingLink) {
             existingLink.remove();
           }
+  
+          // Cambiar el estado a "Pending"
+          if (progressStatus) {
+            progressStatus.textContent = 'Pending'; // Cambiar el texto a "Pending"
+            progressStatus.className = 'status-pending'; // Asegurar que la clase sea 'status-pending'
+          }
+  
         } else {
           // Ocultar el ícono de carga cuando el progreso esté al 100%
           if (loadingIcon) {
@@ -398,6 +406,12 @@
             // Agregar el enlace al contenedor al lado del ícono
             progressContainer.appendChild(link);
           }
+  
+          // Cambiar el estado a "Completed"
+          if (progressStatus) {
+            progressStatus.textContent = 'Completed'; // Cambiar el texto a "Completed"
+            progressStatus.className = 'status-completed'; // Asegurar que la clase sea 'status-completed'
+          }
         }
       }
   
@@ -414,6 +428,7 @@
       console.error('Error al obtener el progreso:', err);
     }
   }
+
 
   setInterval(fetchProgressFromAPI, 3000);
   fetchProgressFromAPI();
