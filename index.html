@@ -352,6 +352,7 @@
   
       const progressBar = document.getElementById('progressBar');
       const loadingIcon = document.getElementById('loadingIcon'); // Ícono de carga
+      const progressContainer = loadingIcon.parentNode; // Contenedor del ícono
   
       if (progressBar) {
         // Actualiza la variable CSS para el ancho de ::before
@@ -368,10 +369,21 @@
           if (loadingIcon) {
             loadingIcon.style.display = 'block';
           }
+          // Eliminar el enlace si el progreso no está al 100%
+          const existingLink = progressContainer.querySelector('a[data-type="report-link"]');
+          if (existingLink) {
+            existingLink.remove();
+          }
         } else {
           // Ocultar el ícono de carga cuando el progreso esté al 100%
           if (loadingIcon) {
-            // Reemplazar el ícono de carga por el enlace "Ver informe detallado"
+            loadingIcon.style.display = 'none';
+          }
+  
+          // Verifica si el enlace ya existe para evitar duplicados
+          const existingLink = progressContainer.querySelector('a[data-type="report-link"]');
+          if (!existingLink) {
+            // Crear un enlace dinámico "Ver informe detallado"
             const link = document.createElement('a');
             link.href = 'https://null-point-sys.github.io/maven-test-reports/surefire-report.html';
             link.target = '_blank'; // Abrir en una nueva pestaña
@@ -379,10 +391,10 @@
             link.style.color = '#007bff';
             link.style.textDecoration = 'none';
             link.style.fontWeight = 'bold';
+            link.setAttribute('data-type', 'report-link'); // Identificador único para evitar duplicados
   
-            // Ocultar el ícono de carga y agregar el enlace
-            loadingIcon.style.display = 'none';
-            loadingIcon.parentNode.appendChild(link);
+            // Agregar el enlace al contenedor
+            progressContainer.appendChild(link);
           }
         }
       }
@@ -400,7 +412,7 @@
       console.error('Error al obtener el progreso:', err);
     }
   }
-   
+
   setInterval(fetchProgressFromAPI, 3000);
   fetchProgressFromAPI();
 
