@@ -1,4 +1,4 @@
-package
+package com.example.demo;
 
     public class UserCode {
   
@@ -7,6 +7,6 @@ package
         }
   
         public String someMethod() {
-            throw new UnsupportedOperationException("Debes implementar this method.");
+            return "hi";
         }
     };
