@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-
-
+///
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -52,7 +51,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         return userRepository.findById(id)
                 .map(user -> {
-                    userRepository(user);
+                    userRepository.delete(user);
                     return ResponseEntity.noContent().<Void>build(); // Especificamos explícitamente <Void>
                 })
                 .orElse(ResponseEntity.notFound().build());
