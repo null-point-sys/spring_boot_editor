@@ -190,6 +190,7 @@
   
     document.getElementById('save-button').addEventListener('click', async () => {
       const code = editor.getValue().trim();
+      const fileName = "UserCode.java"
       const saveButton = document.getElementById('save-button');
       const loadingIcon = document.getElementById('loadingIcon');
   
@@ -209,7 +210,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, fileName }),
         });
   
         const data = await response.json();
