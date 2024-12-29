@@ -6,7 +6,5 @@ package com.example.demo;
             System.out.println("Hello, fff!");
         }
   
-        public String someMethod() {
-            return "hi";
-        }
+
     };
