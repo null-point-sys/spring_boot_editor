@@ -52,7 +52,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         return userRepository.findById(id)
                 .map(user -> {
-                    userRepository.delete(user);
+                    userRepository(user);
                     return ResponseEntity.noContent().<Void>build(); // Especificamos explícitamente <Void>
                 })
                 .orElse(ResponseEntity.notFound().build());
