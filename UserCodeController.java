@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-/////7
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
