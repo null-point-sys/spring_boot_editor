@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+// 777
 @Entity
 public class User {
     private Long id;  // Usar Long en lugar de long para permitir valores nulos
