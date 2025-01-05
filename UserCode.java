@@ -19,7 +19,7 @@ public class GreetingController {
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name") String name) {
         return new Greeting(counter.incrementAndGet(),
-                "");//FIXME Use the string template to say "Hello, %name%"
+                "");
     }
 
 
